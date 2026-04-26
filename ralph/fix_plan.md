@@ -5,7 +5,6 @@
 ## Backlog
 
 ### Phase 1 — Foundation
-- [ ] Create `css/style.css` with the complete design system: all CSS custom properties from design.md §3 (colors light + dark via `prefers-color-scheme`), §4 (font stacks with Source Serif 4, Inter, JetBrains Mono), §5 (spacing tokens `--space-1` through `--space-24`), base reset, `html`/`body` base styles, `::selection` with `--selection`, `.sr-only` + `.sr-only-focusable` utility classes, `prefers-reduced-motion: reduce` reset. Every value must match design.md exactly.
 - [ ] Set up Playwright: run `npm init -y && npm install -D @playwright/test && npx playwright install chromium`. Create `tests/e2e/playwright.config.js` (Chromium only, `webServer` starting `npx serve . -l 3000 -s`, baseURL `http://localhost:3000`). Create `tests/e2e/fixtures/repos.json` (4 mock repos with name, description, language, stargazers_count, fork, html_url) and `tests/e2e/fixtures/commits.json` (10 mock commits with sha, commit.message with title+body, commit.author.date spanning different dates). Install `serve` as dev dependency for the static server.
 
 ### Phase 2 — GitHub API + data layer
@@ -41,4 +40,5 @@
 ## Completed
 
 - [x] Create `index.html`: semantic HTML structure, viewport meta, theme-color metas, preconnects, Google Fonts, skip-to-content, CSS/JS links
+- [x] Create `css/style.css`: complete design system — colors (light + dark), font stacks, spacing tokens, base reset, selection, sr-only, reduced motion
 
