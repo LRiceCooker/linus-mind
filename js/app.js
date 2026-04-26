@@ -332,6 +332,30 @@ backButton.addEventListener('click', () => {
   location.hash = '#/';
 });
 
+// Keyboard navigation
+window.addEventListener('keydown', (e) => {
+  if (currentView !== 'reader') return;
+
+  switch (e.key) {
+    case 'ArrowDown':
+    case ' ':
+    case 'PageDown':
+      e.preventDefault();
+      scrollContainer.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+      break;
+    case 'ArrowUp':
+    case 'PageUp':
+      e.preventDefault();
+      scrollContainer.scrollBy({ top: -window.innerHeight, behavior: 'smooth' });
+      break;
+    case 'Escape':
+    case 'Backspace':
+      e.preventDefault();
+      location.hash = '#/';
+      break;
+  }
+});
+
 // Initial route
 route();
 

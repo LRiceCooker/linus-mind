@@ -5,7 +5,6 @@
 ## Backlog
 
 ### Phase 5 — Routing + navigation
-- [ ] Add keyboard navigation: `keydown` listener. In reader view: `ArrowDown`/`Space`/`PageDown` → `scrollBy` one viewport height (triggers snap). `ArrowUp`/`PageUp` → scroll up one viewport. `Escape`/`Backspace` → navigate to `#/`. Prevent default on Space (don't scroll the page normally). Only active when reader view is visible.
 - [ ] Write `tests/e2e/navigation.spec.js`: mock API. Tests: back button returns to repo list, direct URL `#/repo/linux` loads reader on fresh load, browser back button works (test with `page.goBack()`), Escape key navigates back, repo list not re-fetched on back (mock should only be intercepted once for repos), view transitions have opacity change.
 
 ### Phase 6 — Responsive polish + final QA
@@ -31,4 +30,5 @@
 - [x] Implement reader in app.js: data loading, IntersectionObserver entries, infinite scroll, progress bar, top bar auto-hide, scroll position memory
 - [x] Write tests/e2e/reader.spec.js: 9 tests passing (reader view, chapter title, scroll prompt, commits, decorative rule, snap, lead-in, progress bar, counter)
 - [x] Implement view transition animations (250ms fade out/in on route change)
+- [x] Add keyboard navigation: ArrowDown/Space/PageDown, ArrowUp/PageUp, Escape/Backspace
 
