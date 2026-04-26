@@ -4,10 +4,6 @@
 
 ## Backlog
 
-### Phase 3 — Repo list view
-- [ ] Wire up repo list in `js/app.js`: on initial load, show hero (static in HTML or rendered once) + spinner, call `fetchRepos()`, replace spinner with rendered list. Handle errors: 403 → "GitHub needs a moment. Come back shortly.", other → "Something went wrong." Apply hover/active/focus-visible states via CSS (no JS needed for these). Set up the full-bleed hover effect on repo cards (negative margin + padding trick from design.md §6.2).
-- [ ] Write `tests/e2e/repos.spec.js`: mock GitHub API via `page.route('**/api.github.com/**')`. Tests: title "linus-mind" visible, dinkus `· · ·` visible, repo list renders after mock data, each repo has a name in serif, repos are `<a>` tags, description is in italic, meta shows language, spinner visible during loading (use delayed mock response), error message on 403 mock response.
-
 ### Phase 4 — Commit reader view
 - [ ] Build the chapter title page in `js/ui.js`: `renderChapterTitle(repo)` creates a full-viewport-height title page with: repo name (Source Serif 4 Light 300, large), description (serif italic, secondary), dinkus ornament, "SCROLL TO BEGIN" prompt (Inter, uppercase, `letter-spacing: 0.08em`, tertiary) with bouncing `↓` arrow. This is the first snap point. The prompt + arrow auto-fade after 4s via CSS animation. Also disappears immediately on first scroll.
 - [ ] Build commit page rendering in `js/ui.js`: `renderCommitPage(commit, index, total, hasMore)` creates an `<article>` with: commit title (`<h2>`, serif bold), decorative rule (3rem centered, 1px, only if body exists), commit body (serif regular, `pre-wrap`, with small-caps lead-in on first 3-4 words via `<span class="lead-in">`), metadata footer (date left, SHA right), page counter. The lead-in: extract text up to first comma/period/colon/dash or first 4 words, wrap in span. Follow design.md §6.4 exactly for all sizes, weights, spacing.
@@ -38,4 +34,5 @@
 - [x] Create `js/github.js`: fetchRepos + fetchCommits with sessionStorage/Map caching, Link header parsing, European date format
 - [x] Create `js/ui.js`: renderRepoList (a tags, name/desc/meta), renderSpinner, renderError — all DOM nodes
 - [x] Wire up repo list in js/app.js + repo list CSS (hero, cards, spinner, error, full-bleed hover)
+- [x] Write tests/e2e/repos.spec.js: 9 tests all passing (title, dinkus, repo list, a tags, italic, meta, spinner, 403)
 
