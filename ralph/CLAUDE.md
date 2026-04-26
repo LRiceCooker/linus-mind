@@ -65,3 +65,4 @@ tests/e2e/
 - The `transitionend` event may not fire if the element was already hidden. Always add a setTimeout fallback.
 - `prefers-color-scheme: dark` in CSS custom properties auto-switches all colors — no JS needed for dark mode.
 - View transitions: fade out outgoing → set hidden → show incoming → fade in. Track current view to know what to fade out.
+- Playwright route.fulfill for cross-origin mocks: custom response headers (X-RateLimit-*, ETag) are not visible to browser JS unless you include `Access-Control-Allow-Origin: *` and `Access-Control-Expose-Headers` in the mock response. CORS applies even for intercepted routes.
