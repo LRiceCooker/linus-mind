@@ -39,4 +39,5 @@
 - [x] Write `tests/e2e/typography.spec.js` — 14 typography tests
 - [x] Implement reading progress persistence with `localStorage`
 - [x] Write E2E tests for reading progress in `tests/e2e/progress.spec.js`
+- [x] Final QA pass: all 59 tests passing across caching, navigation, reader, repos, responsive, typography, and progress suites
 
