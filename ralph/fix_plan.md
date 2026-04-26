@@ -2,8 +2,7 @@
 
 ## In Progress
 
-## Backlog (1) Create a small module or functions in `js/app.js` for `saveProgress(repo, { commitIndex, page, totalLoaded })` and `loadProgress(repo)`. Storage key: `linus-mind:progress`, value is a JSON object keyed by repo name (see `ralph/specs/project.md` "Reading progress persistence" for full schema). (2) Save progress on each scroll snap — when IntersectionObserver detects a new commit page is active, update `commitIndex`. Debounce `localStorage` writes to max 1/second. Also save on `beforeunload`. (3) On entering a repo with saved progress: fetch commits up to saved `page` (sequential fetches), render all, then `scrollTo` the saved `commitIndex` element with `behavior: 'instant'`. (4) On repo list, show "page N" in italic tertiary below the meta row for repos with saved progress. (5) On app load, clean up entries older than 30 days and cap at 20 entries (remove oldest).
-- [ ] Write E2E tests for reading progress in `tests/e2e/progress.spec.js`. Tests: (1) After scrolling to commit 3, leaving, and returning to same repo — reader starts at commit 3 (mock localStorage). (2) Repo list shows "page N" indicator for repos with saved progress. (3) Fresh repo with no saved progress starts at chapter title page. (4) Progress survives page reload (set localStorage before navigating). (5) Old entries (>30 days) are cleaned up on load.
+## Backlog Tests: (1) After scrolling to commit 3, leaving, and returning to same repo — reader starts at commit 3 (mock localStorage). (2) Repo list shows "page N" indicator for repos with saved progress. (3) Fresh repo with no saved progress starts at chapter title page. (4) Progress survives page reload (set localStorage before navigating). (5) Old entries (>30 days) are cleaned up on load.
 - [ ] Final QA pass: run full Playwright suite, fix any regressions or parser edge cases.
 
 ## Completed
@@ -39,4 +38,5 @@
 - [x] Integrate typography parser into `js/ui.js`
 - [x] Write `tests/e2e/typography.spec.js` — 14 typography tests
 - [x] Implement reading progress persistence with `localStorage`
+- [x] Write E2E tests for reading progress in `tests/e2e/progress.spec.js`
 
