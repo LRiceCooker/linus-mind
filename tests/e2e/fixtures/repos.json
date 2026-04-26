@@ -1,0 +1,34 @@
+[
+  {
+    "name": "linux",
+    "description": "Linux kernel source tree",
+    "language": "C",
+    "stargazers_count": 175000,
+    "fork": false,
+    "html_url": "https://github.com/torvalds/linux"
+  },
+  {
+    "name": "subsurface-for-dirk",
+    "description": "Subsurface dive log program",
+    "language": "C",
+    "stargazers_count": 1200,
+    "fork": false,
+    "html_url": "https://github.com/torvalds/subsurface-for-dirk"
+  },
+  {
+    "name": "libdc-for-dirk",
+    "description": "Only used for staging for pull requests to libdivecomputer",
+    "language": "C",
+    "stargazers_count": 150,
+    "fork": false,
+    "html_url": "https://github.com/torvalds/libdc-for-dirk"
+  },
+  {
+    "name": "test-tlb",
+    "description": "Stupid test program for TLB performance",
+    "language": "C",
+    "stargazers_count": 80,
+    "fork": false,
+    "html_url": "https://github.com/torvalds/test-tlb"
+  }
+]

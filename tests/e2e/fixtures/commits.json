@@ -1,0 +1,92 @@
+[
+  {
+    "sha": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+    "commit": {
+      "message": "Merge tag 'net-6.8-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net\n\nPull networking fixes from Jakub Kicinski:\n\"Including fixes from bpf, wireless and netfilter.\n\nCurrent release - regressions:\n - Fix a possible race condition in the AF_UNIX garbage collector.\n\nCurrent release - new code bugs:\n - bpf: fix re-attachment branch in bpf_tracing_prog_attach.\n - bpf: fix accesses to uninit stack slots.\"",
+      "author": {
+        "date": "2024-01-15T20:30:00Z"
+      }
+    }
+  },
+  {
+    "sha": "b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3",
+    "commit": {
+      "message": "Linux 6.8-rc1",
+      "author": {
+        "date": "2024-01-14T22:00:00Z"
+      }
+    }
+  },
+  {
+    "sha": "c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+    "commit": {
+      "message": "Merge tag 'mm-stable-2024-01-08-15-31' of git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm\n\nPull mm updates from Andrew Morton:\n \"The usual shower of singleton patches all over MM, plus some\n  multi-patch series. Notable series include:\n\n  - Improved hugetlb handling, reducing lock contention\n  - New page allocator performance optimizations\n  - Continued work on memory tiering and NUMA balancing\"",
+      "author": {
+        "date": "2024-01-12T18:45:00Z"
+      }
+    }
+  },
+  {
+    "sha": "d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5",
+    "commit": {
+      "message": "Merge tag 'driver-core-6.8-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core\n\nPull driver core updates from Greg KH:\n \"Here is the big set of driver core changes for 6.8-rc1.\n\n  Lots of things in here, all over the tree due to some api changes.\n  Nothing major, just a constant forward progress of cleanups and\n  improvements that will allow us to do more in future releases.\"",
+      "author": {
+        "date": "2024-01-10T16:20:00Z"
+      }
+    }
+  },
+  {
+    "sha": "e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6",
+    "commit": {
+      "message": "Revert \"mm: always expand the stack with the mmap write lock held\"\n\nThis reverts commit 8d7071af890768438c14db6172cc8f9f4d04e184.\n\nThis approach, while conceptually cleaner, causes issues with some\nsetups. We will need to revisit this, but for now revert to the\nworking state while we figure out the right approach.\n\nThe issue was reported by multiple people, and the root cause is\nthat we can now trigger the stack expansion while not holding the\nmmap lock at all, which can race with other operations.",
+      "author": {
+        "date": "2024-01-08T14:00:00Z"
+      }
+    }
+  },
+  {
+    "sha": "f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1",
+    "commit": {
+      "message": "Merge tag 'for-6.8/block-2024-01-08' of git://git.kernel.dk/linux-block\n\nPull block updates from Jens Axboe:\n \"Nothing major in here, just a collection of fixes and cleanups:\n\n  - NVMe pull request via Keith:\n    - Improved error handling in the fabrics path\n    - Fix for a potential null pointer dereference\n  - A few MD fixes\n  - Cleanup of the partition handling code\n  - Minor bio_vec improvements\"",
+      "author": {
+        "date": "2024-01-06T11:30:00Z"
+      }
+    }
+  },
+  {
+    "sha": "a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6",
+    "commit": {
+      "message": "Don't reinvent the wheel with new 'cleanup' infrastructure\n\nPeople, stop trying to come up with fancy new infrastructure when\nthe existing patterns work perfectly fine. Yes, the C language\ndoesn't have destructors, and yes, it would be nice to have\nautomatic cleanup. But the answer is NOT to add yet another set of\nmacros that nobody understands.\n\nThe kernel has survived for over 30 years with explicit resource\nmanagement. The patterns are well understood, well tested, and\nwell documented. Adding compiler-specific __attribute__((cleanup))\nmagic just makes the code harder to read and harder to debug.\n\nIf your function has so many resources that cleanup is painful,\nyour function is too complex. Split it up.",
+      "author": {
+        "date": "2024-01-04T09:15:00Z"
+      }
+    }
+  },
+  {
+    "sha": "b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7",
+    "commit": {
+      "message": "Merge tag 'usb-6.8-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb\n\nPull USB/Thunderbolt updates from Greg KH:\n \"A small set of USB and Thunderbolt changes. The USB4 improvements\n  continue, and we have the usual gadget driver fixes and xhci\n  improvements.\"",
+      "author": {
+        "date": "2024-01-02T20:00:00Z"
+      }
+    }
+  },
+  {
+    "sha": "c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8",
+    "commit": {
+      "message": "Merge tag 'sound-6.8-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound\n\nPull sound updates from Takashi Iwai:\n \"There are a few new codec supports and HD-audio quirks as usual,\n  along with continued ASoC Intel and AMD platform improvements.\n  The biggest change is the reorganization of the virtio sound\n  driver for better maintainability.\"",
+      "author": {
+        "date": "2023-12-30T15:45:00Z"
+      }
+    }
+  },
+  {
+    "sha": "d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9",
+    "commit": {
+      "message": "Happy New Year, and let's make 2024 the year of good commit messages\n\nSeriously, people. \"Fix bug\" is not a commit message. \"Update code\" is\nnot a commit message. A commit message should explain WHY you're making\nthe change, not WHAT you changed — I can see what you changed from the\ndiff.\n\nThe commit message is the most important part of a commit. It's the\nonly thing that survives the test of time. Code gets rewritten, files\nget moved, but the commit message stays forever in the git log.\n\nWrite it like someone will read it five years from now and need to\nunderstand not just what happened, but why it happened. Because\nsomeone will. And that someone might be you.",
+      "author": {
+        "date": "2023-12-28T10:00:00Z"
+      }
+    }
+  }
+]

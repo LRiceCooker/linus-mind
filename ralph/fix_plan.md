@@ -4,9 +4,6 @@
 
 ## Backlog
 
-### Phase 1 — Foundation
-- [ ] Set up Playwright: run `npm init -y && npm install -D @playwright/test && npx playwright install chromium`. Create `tests/e2e/playwright.config.js` (Chromium only, `webServer` starting `npx serve . -l 3000 -s`, baseURL `http://localhost:3000`). Create `tests/e2e/fixtures/repos.json` (4 mock repos with name, description, language, stargazers_count, fork, html_url) and `tests/e2e/fixtures/commits.json` (10 mock commits with sha, commit.message with title+body, commit.author.date spanning different dates). Install `serve` as dev dependency for the static server.
-
 ### Phase 2 — GitHub API + data layer
 - [ ] Create `js/github.js`: implement `fetchRepos()` — GET `/users/torvalds/repos?type=owner&sort=stars&direction=desc&per_page=100`, filter forks, map to `{ name, description, language, stars }`, sort by stars desc. Add sessionStorage caching (store JSON, check cache first, return cached if exists). Implement `fetchCommits(repo, page)` — GET `/repos/torvalds/{repo}/commits?per_page=30&page={page}`, parse `Link` header for `rel="next"`, map commits to `{ sha (7 chars), title (first line), body (rest after blank line), date (raw ISO string), formattedDate ("15 March 2005" European format) }`, return `{ commits, hasMore }`. Add in-memory Map cache keyed by `repo:page`. All functions are `async` and `export`ed.
 
@@ -41,4 +38,5 @@
 
 - [x] Create `index.html`: semantic HTML structure, viewport meta, theme-color metas, preconnects, Google Fonts, skip-to-content, CSS/JS links
 - [x] Create `css/style.css`: complete design system — colors (light + dark), font stacks, spacing tokens, base reset, selection, sr-only, reduced motion
+- [x] Set up Playwright: config, fixtures (repos.json + commits.json), serve, chromium
 
