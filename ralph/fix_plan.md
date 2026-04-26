@@ -5,9 +5,6 @@
 ## Backlog
 
 ### Phase 6 — Responsive polish + final QA
-- [ ] Mobile polish: test at 375px width (iPhone SE). Verify every font size matches design.md mobile column. Check: tap targets ≥ 44px, `safe-area-inset` padding on notched devices, `dvh` used everywhere, no horizontal overflow, hero is compact, commit page padding is 64px top. Fix any issues found.
-- [ ] Desktop polish: test at 1440px. Verify: content centered at 42rem max (38rem reading column), full-bleed hover on repo cards works, keyboard nav works, scroll snap feels smooth with trackpad, progress bar updates smoothly, top bar auto-hide is fluid. Fix any issues found.
-- [ ] Dark mode polish: test both views in dark mode. Verify: all colors match design.md §3 dark mode values, `theme-color` meta updates, no elements using hardcoded light colors, selection color works, dividers are visible but subtle, progress bar and spinner accent is correct. Fix any issues found.
 - [ ] Write `tests/e2e/responsive.spec.js`: iPhone 13 viewport — content fills width, font-size ≥ 14px on body text, tap targets ≥ 44px (back button, repo cards). Desktop 1440px — content centered with max-width, repo card hover changes background. Dark mode (`colorScheme: 'dark'`) — background color matches dark `--bg`. Reduced motion — check that transition durations are near zero.
 - [ ] Final QA pass: run full Playwright suite (`npx playwright test`). Manually verify: smooth font loading (no FOUT flash), no console errors, rate limit message works, empty repo handling, ornamental dots render correctly, small-caps lead-in looks good, reading position restores on back-and-forth navigation. Fix any remaining issues.
 
@@ -29,4 +26,7 @@
 - [x] Implement view transition animations (250ms fade out/in on route change)
 - [x] Add keyboard navigation: ArrowDown/Space/PageDown, ArrowUp/PageUp, Escape/Backspace
 - [x] Write tests/e2e/navigation.spec.js: 6 tests (back button, direct URL, browser back, Escape, cache, opacity)
+- [x] Mobile polish: safe-area-inset-bottom on commit pages, overflow-x hidden, all mobile sizes verified
+- [x] Desktop polish: 42rem max-width, 38rem reading column, full-bleed hover, all desktop sizes verified
+- [x] Dark mode polish: all colors via CSS custom properties, dark scheme auto-switch verified
 

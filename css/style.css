@@ -92,6 +92,7 @@ body {
   color: var(--text);
   background-color: var(--bg);
   line-height: 1.6;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -436,13 +437,13 @@ body {
   max-width: 38rem;
   width: 100%;
   margin: 0 auto;
-  padding: 64px var(--pad) 32px;
+  padding: 64px var(--pad) calc(32px + env(safe-area-inset-bottom, 0px));
 }
 
 @media (min-width: 640px) {
   .reading-column {
     padding-top: 80px;
-    padding-bottom: 48px;
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
   }
 }
 
