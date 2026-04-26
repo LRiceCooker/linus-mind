@@ -39,4 +39,5 @@
 - [x] Write E2E tests for caching + rate-limit in `tests/e2e/caching.spec.js`
 - [x] Refactor home page to scroll-snap layout
 - [x] Skip commits with no message body in the reader
+- [x] Create `js/typography.js` — the core typesetting module
 
