@@ -5,7 +5,6 @@
 ## Backlog
 
 ### Phase 3 — Repo list view
-- [ ] Create `js/ui.js` with repo list rendering. `renderHero()`: create the hero section with "linus-mind" title (Source Serif 4 Light 300), tagline (Inter, lowercase), and dinkus ornament (`·  ·  ·`). `renderRepoList(repos)`: create repo cards as `<a href="#/repo/{name}">` elements with: repo name (serif 600), description (serif italic — use `<em>` tag, clamped to 2 lines), meta row (`Language · stars ★` with middle dot separator). `renderSpinner()`, `renderError(message)`. All functions return DOM elements (not innerHTML strings) for security.
 - [ ] Wire up repo list in `js/app.js`: on initial load, show hero (static in HTML or rendered once) + spinner, call `fetchRepos()`, replace spinner with rendered list. Handle errors: 403 → "GitHub needs a moment. Come back shortly.", other → "Something went wrong." Apply hover/active/focus-visible states via CSS (no JS needed for these). Set up the full-bleed hover effect on repo cards (negative margin + padding trick from design.md §6.2).
 - [ ] Write `tests/e2e/repos.spec.js`: mock GitHub API via `page.route('**/api.github.com/**')`. Tests: title "linus-mind" visible, dinkus `· · ·` visible, repo list renders after mock data, each repo has a name in serif, repos are `<a>` tags, description is in italic, meta shows language, spinner visible during loading (use delayed mock response), error message on 403 mock response.
 
@@ -37,4 +36,5 @@
 - [x] Create `css/style.css`: complete design system — colors (light + dark), font stacks, spacing tokens, base reset, selection, sr-only, reduced motion
 - [x] Set up Playwright: config, fixtures (repos.json + commits.json), serve, chromium
 - [x] Create `js/github.js`: fetchRepos + fetchCommits with sessionStorage/Map caching, Link header parsing, European date format
+- [x] Create `js/ui.js`: renderRepoList (a tags, name/desc/meta), renderSpinner, renderError — all DOM nodes
 
