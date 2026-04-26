@@ -81,6 +81,15 @@
     }
   },
   {
+    "sha": "empty123empty456empty789empty012empty345e",
+    "commit": {
+      "message": "   \n  \n   ",
+      "author": {
+        "date": "2023-12-29T12:00:00Z"
+      }
+    }
+  },
+  {
     "sha": "d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9",
     "commit": {
       "message": "Happy New Year, and let's make 2024 the year of good commit messages\n\nSeriously, people. \"Fix bug\" is not a commit message. \"Update code\" is\nnot a commit message. A commit message should explain WHY you're making\nthe change, not WHAT you changed — I can see what you changed from the\ndiff.\n\nThe commit message is the most important part of a commit. It's the\nonly thing that survives the test of time. Code gets rewritten, files\nget moved, but the commit message stays forever in the git log.\n\nWrite it like someone will read it five years from now and need to\nunderstand not just what happened, but why it happened. Because\nsomeone will. And that someone might be you.",

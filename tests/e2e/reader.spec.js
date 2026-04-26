@@ -88,4 +88,20 @@ test.describe('Commit Reader', () => {
     // Format: "N / M" or "N / M+"
     expect(text).toMatch(/^\d+ \/ \d+\+?$/);
   });
+
+  test('commit with empty message is not rendered', async ({ page }) => {
+    await page.goto('/#/repo/linux');
+    await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
+
+    // The fixtures include a commit with whitespace-only message (sha: empty123...)
+    // It should be filtered out — no commit page should contain that SHA
+    const allShas = await page.locator('.commit-sha').allTextContents();
+    const hasEmpty = allShas.some(sha => sha.startsWith('empty12'));
+    expect(hasEmpty).toBe(false);
+
+    // Total in page counter should reflect filtered count (10 valid commits, not 11)
+    const counter = page.locator('.commit-counter').first();
+    const text = await counter.textContent();
+    expect(text).toContain('/ 10');
+  });
 });

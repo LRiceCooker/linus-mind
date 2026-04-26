@@ -30,6 +30,11 @@ function checkRateLimit() {
   }
 }
 
+// Filter out commits with empty/whitespace-only messages
+function filterEmptyCommits(commits) {
+  return commits.filter(c => c.title.trim() || c.body.trim());
+}
+
 // DOM references
 const repoView = document.getElementById('repo-view');
 const readerView = document.getElementById('reader-view');
@@ -134,7 +139,7 @@ async function loadMoreCommits() {
   try {
     const result = await fetchCommits(currentRepo, currentPage);
     checkRateLimit();
-    const newCommits = result.commits.reverse();
+    const newCommits = filterEmptyCommits(result.commits.reverse());
     hasMoreCommits = result.hasMore;
 
     allCommits = allCommits.concat(newCommits);
@@ -262,7 +267,7 @@ async function loadReader(repoName) {
 
     const result = await fetchCommits(repoName, 1);
     checkRateLimit();
-    const commits = result.commits.reverse(); // chronological
+    const commits = filterEmptyCommits(result.commits.reverse()); // chronological
     hasMoreCommits = result.hasMore;
     allCommits = commits;
 
