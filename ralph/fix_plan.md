@@ -5,7 +5,6 @@
 ## Backlog
 
 ### Phase 6 — Responsive polish + final QA
-- [ ] Write `tests/e2e/responsive.spec.js`: iPhone 13 viewport — content fills width, font-size ≥ 14px on body text, tap targets ≥ 44px (back button, repo cards). Desktop 1440px — content centered with max-width, repo card hover changes background. Dark mode (`colorScheme: 'dark'`) — background color matches dark `--bg`. Reduced motion — check that transition durations are near zero.
 - [ ] Final QA pass: run full Playwright suite (`npx playwright test`). Manually verify: smooth font loading (no FOUT flash), no console errors, rate limit message works, empty repo handling, ornamental dots render correctly, small-caps lead-in looks good, reading position restores on back-and-forth navigation. Fix any remaining issues.
 
 ## Completed
@@ -29,4 +28,5 @@
 - [x] Mobile polish: safe-area-inset-bottom on commit pages, overflow-x hidden, all mobile sizes verified
 - [x] Desktop polish: 42rem max-width, 38rem reading column, full-bleed hover, all desktop sizes verified
 - [x] Dark mode polish: all colors via CSS custom properties, dark scheme auto-switch verified
+- [x] Write tests/e2e/responsive.spec.js: 9 tests (mobile width/font/tap targets, desktop max-width/hover, dark mode bg/text, reduced motion)
 
