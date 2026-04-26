@@ -529,6 +529,152 @@ body {
   letter-spacing: 0.05em;
 }
 
+/* -------------------------------------------------------------------
+   Typography — Inline Code
+   ------------------------------------------------------------------- */
+.commit-body code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bg-hover);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+/* -------------------------------------------------------------------
+   Typography — Code Blocks
+   ------------------------------------------------------------------- */
+.commit-body .code-block {
+  background: var(--bg-hover);
+  border-radius: 4px;
+  padding: var(--space-3) var(--space-4);
+  margin: var(--space-4) 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre;
+  -webkit-overflow-scrolling: touch;
+}
+
+.commit-body .code-block code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+/* -------------------------------------------------------------------
+   Typography — Email Quotes
+   ------------------------------------------------------------------- */
+.commit-body .email-quote {
+  border-left: 2px solid var(--divider);
+  padding-left: var(--space-4);
+  margin: var(--space-4) 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* -------------------------------------------------------------------
+   Typography — Lists
+   ------------------------------------------------------------------- */
+.commit-body ol,
+.commit-body ul {
+  padding-left: var(--space-6);
+  margin: var(--space-4) 0;
+}
+
+.commit-body li {
+  margin-bottom: var(--space-2);
+  padding-left: var(--space-1);
+}
+
+.commit-body ul {
+  list-style: none;
+}
+
+.commit-body ul > li {
+  position: relative;
+}
+
+.commit-body ul > li::before {
+  content: '\00B7';
+  position: absolute;
+  margin-left: calc(-1 * var(--space-4));
+  color: var(--text-tertiary);
+}
+
+.commit-body ol {
+  list-style-position: outside;
+}
+
+/* -------------------------------------------------------------------
+   Typography — Trailers
+   ------------------------------------------------------------------- */
+.commit-trailers {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--divider);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  line-height: 1.8;
+}
+
+.commit-trailers .trailer {
+  display: block;
+}
+
+/* -------------------------------------------------------------------
+   Typography — URLs
+   ------------------------------------------------------------------- */
+.commit-body .url {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+/* -------------------------------------------------------------------
+   Typography — Paragraphs
+   ------------------------------------------------------------------- */
+.commit-body p {
+  margin-bottom: var(--space-4);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.commit-body p:last-of-type {
+  margin-bottom: 0;
+}
+
+/* -------------------------------------------------------------------
+   Typography — Callouts, Continuation, Footnotes, Emphasis
+   ------------------------------------------------------------------- */
+.commit-body .callout {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.85em;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.commit-body .continuation {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.commit-body .footnote-marker {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+}
+
+.commit-body em {
+  font-style: italic;
+}
+
 .commit-footer {
   margin-top: auto;
   padding-top: var(--space-10);
