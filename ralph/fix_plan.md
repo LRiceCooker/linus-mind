@@ -4,9 +4,6 @@
 
 ## Backlog
 
-### Phase 5 — Routing + navigation
-- [ ] Write `tests/e2e/navigation.spec.js`: mock API. Tests: back button returns to repo list, direct URL `#/repo/linux` loads reader on fresh load, browser back button works (test with `page.goBack()`), Escape key navigates back, repo list not re-fetched on back (mock should only be intercepted once for repos), view transitions have opacity change.
-
 ### Phase 6 — Responsive polish + final QA
 - [ ] Mobile polish: test at 375px width (iPhone SE). Verify every font size matches design.md mobile column. Check: tap targets ≥ 44px, `safe-area-inset` padding on notched devices, `dvh` used everywhere, no horizontal overflow, hero is compact, commit page padding is 64px top. Fix any issues found.
 - [ ] Desktop polish: test at 1440px. Verify: content centered at 42rem max (38rem reading column), full-bleed hover on repo cards works, keyboard nav works, scroll snap feels smooth with trackpad, progress bar updates smoothly, top bar auto-hide is fluid. Fix any issues found.
@@ -31,4 +28,5 @@
 - [x] Write tests/e2e/reader.spec.js: 9 tests passing (reader view, chapter title, scroll prompt, commits, decorative rule, snap, lead-in, progress bar, counter)
 - [x] Implement view transition animations (250ms fade out/in on route change)
 - [x] Add keyboard navigation: ArrowDown/Space/PageDown, ArrowUp/PageUp, Escape/Backspace
+- [x] Write tests/e2e/navigation.spec.js: 6 tests (back button, direct URL, browser back, Escape, cache, opacity)
 

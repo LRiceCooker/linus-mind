@@ -132,17 +132,16 @@ body {
 /* -------------------------------------------------------------------
    View Transitions — §8
    ------------------------------------------------------------------- */
-#repo-view,
-#reader-view {
+.view {
   opacity: 0;
   transition: opacity 250ms ease;
 }
 
-.view-visible {
+.view.view-visible {
   opacity: 1;
 }
 
-.view-hidden {
+.view.view-hidden {
   opacity: 0;
 }
 
