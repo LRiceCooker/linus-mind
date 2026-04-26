@@ -4,9 +4,6 @@
 
 ## Backlog
 
-### Phase 2 — GitHub API + data layer
-- [ ] Create `js/github.js`: implement `fetchRepos()` — GET `/users/torvalds/repos?type=owner&sort=stars&direction=desc&per_page=100`, filter forks, map to `{ name, description, language, stars }`, sort by stars desc. Add sessionStorage caching (store JSON, check cache first, return cached if exists). Implement `fetchCommits(repo, page)` — GET `/repos/torvalds/{repo}/commits?per_page=30&page={page}`, parse `Link` header for `rel="next"`, map commits to `{ sha (7 chars), title (first line), body (rest after blank line), date (raw ISO string), formattedDate ("15 March 2005" European format) }`, return `{ commits, hasMore }`. Add in-memory Map cache keyed by `repo:page`. All functions are `async` and `export`ed.
-
 ### Phase 3 — Repo list view
 - [ ] Create `js/ui.js` with repo list rendering. `renderHero()`: create the hero section with "linus-mind" title (Source Serif 4 Light 300), tagline (Inter, lowercase), and dinkus ornament (`·  ·  ·`). `renderRepoList(repos)`: create repo cards as `<a href="#/repo/{name}">` elements with: repo name (serif 600), description (serif italic — use `<em>` tag, clamped to 2 lines), meta row (`Language · stars ★` with middle dot separator). `renderSpinner()`, `renderError(message)`. All functions return DOM elements (not innerHTML strings) for security.
 - [ ] Wire up repo list in `js/app.js`: on initial load, show hero (static in HTML or rendered once) + spinner, call `fetchRepos()`, replace spinner with rendered list. Handle errors: 403 → "GitHub needs a moment. Come back shortly.", other → "Something went wrong." Apply hover/active/focus-visible states via CSS (no JS needed for these). Set up the full-bleed hover effect on repo cards (negative margin + padding trick from design.md §6.2).
@@ -39,4 +36,5 @@
 - [x] Create `index.html`: semantic HTML structure, viewport meta, theme-color metas, preconnects, Google Fonts, skip-to-content, CSS/JS links
 - [x] Create `css/style.css`: complete design system — colors (light + dark), font stacks, spacing tokens, base reset, selection, sr-only, reduced motion
 - [x] Set up Playwright: config, fixtures (repos.json + commits.json), serve, chromium
+- [x] Create `js/github.js`: fetchRepos + fetchCommits with sessionStorage/Map caching, Link header parsing, European date format
 
