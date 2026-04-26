@@ -1,4 +1,5 @@
 // ui.js — DOM rendering functions (return DOM nodes, not innerHTML)
+import { typeset } from './typography.js';
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -100,18 +101,19 @@ export function renderCommitPage(commit, index, total, hasMore) {
     column.appendChild(rule);
 
     const body = el('div', 'commit-body');
-    // Apply lead-in to first line
-    const firstNewline = commit.body.indexOf('\n');
-    const firstLine = firstNewline >= 0 ? commit.body.slice(0, firstNewline) : commit.body;
-    const restLines = firstNewline >= 0 ? commit.body.slice(firstNewline) : '';
+    body.innerHTML = typeset(commit.body);
 
-    if (firstLine.trim()) {
-      const { leadIn, rest } = extractLeadIn(firstLine);
-      const leadSpan = el('span', 'lead-in', leadIn);
-      body.appendChild(leadSpan);
-      body.appendChild(document.createTextNode(rest + restLines));
-    } else {
-      body.textContent = commit.body;
+    // Apply small-caps lead-in on the first <p>'s first text node
+    const firstP = body.querySelector('p');
+    if (firstP) {
+      const walker = document.createTreeWalker(firstP, NodeFilter.SHOW_TEXT);
+      const firstText = walker.nextNode();
+      if (firstText && firstText.textContent.trim()) {
+        const { leadIn, rest } = extractLeadIn(firstText.textContent);
+        const leadSpan = el('span', 'lead-in', leadIn);
+        firstText.textContent = rest;
+        firstText.parentNode.insertBefore(leadSpan, firstText);
+      }
     }
 
     column.appendChild(body);
