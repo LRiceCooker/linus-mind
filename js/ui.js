@@ -37,6 +37,39 @@ export function renderRepoList(repos) {
   return list;
 }
 
+export function renderChapterTitle(repo) {
+  const page = el('div', 'chapter-title');
+  page.setAttribute('tabindex', '-1');
+
+  const content = el('div', 'chapter-title-content');
+
+  const name = el('h1', 'chapter-name', repo.name);
+  content.appendChild(name);
+
+  if (repo.description) {
+    const desc = document.createElement('em');
+    desc.className = 'chapter-description';
+    desc.textContent = repo.description;
+    content.appendChild(desc);
+  }
+
+  const dinkus = el('div', 'dinkus');
+  dinkus.setAttribute('aria-hidden', 'true');
+  dinkus.innerHTML = '&middot;  &middot;  &middot;';
+  content.appendChild(dinkus);
+
+  page.appendChild(content);
+
+  const prompt = el('div', 'scroll-prompt');
+  const promptText = el('span', 'scroll-prompt-text', 'SCROLL TO BEGIN');
+  prompt.appendChild(promptText);
+  const arrow = el('span', 'scroll-prompt-arrow', '\u2193');
+  prompt.appendChild(arrow);
+  page.appendChild(prompt);
+
+  return page;
+}
+
 export function renderSpinner() {
   const wrapper = el('div', 'spinner-wrapper');
   wrapper.setAttribute('role', 'status');

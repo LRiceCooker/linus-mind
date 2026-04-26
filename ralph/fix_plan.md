@@ -5,7 +5,6 @@
 ## Backlog
 
 ### Phase 4 — Commit reader view
-- [ ] Build the chapter title page in `js/ui.js`: `renderChapterTitle(repo)` creates a full-viewport-height title page with: repo name (Source Serif 4 Light 300, large), description (serif italic, secondary), dinkus ornament, "SCROLL TO BEGIN" prompt (Inter, uppercase, `letter-spacing: 0.08em`, tertiary) with bouncing `↓` arrow. This is the first snap point. The prompt + arrow auto-fade after 4s via CSS animation. Also disappears immediately on first scroll.
 - [ ] Build commit page rendering in `js/ui.js`: `renderCommitPage(commit, index, total, hasMore)` creates an `<article>` with: commit title (`<h2>`, serif bold), decorative rule (3rem centered, 1px, only if body exists), commit body (serif regular, `pre-wrap`, with small-caps lead-in on first 3-4 words via `<span class="lead-in">`), metadata footer (date left, SHA right), page counter. The lead-in: extract text up to first comma/period/colon/dash or first 4 words, wrap in span. Follow design.md §6.4 exactly for all sizes, weights, spacing.
 - [ ] Build commit reader CSS: scroll container (`100dvh`, `scroll-snap-type: y mandatory`, `overscroll-behavior-y: contain`), commit page (flex column, `min-height: 100dvh`, `scroll-snap-align: start`), reading column (`max-width: 38rem`, centered), decorative rule, small-caps lead-in (`font-variant: small-caps`, weight 600, `letter-spacing: 0.05em`), commit entry animation (opacity 0 + translateY 12px → visible class adds opacity 1 + translateY 0, transition 400ms ease-out), chapter title page styles. Every value from design.md §6.3, §6.4, §8.
 - [ ] Build the top bar in HTML/CSS: fixed, 48px, `--bg-elevated` + `backdrop-filter: blur(16px)`, back button (`←` in serif, 44×44 tap target, hover/active/focus-visible states), repo name (Inter 500, secondary, truncated). Add `env(safe-area-inset-top)` padding for notched phones. Follow design.md §6.5 exactly.
@@ -35,4 +34,5 @@
 - [x] Create `js/ui.js`: renderRepoList (a tags, name/desc/meta), renderSpinner, renderError — all DOM nodes
 - [x] Wire up repo list in js/app.js + repo list CSS (hero, cards, spinner, error, full-bleed hover)
 - [x] Write tests/e2e/repos.spec.js: 9 tests all passing (title, dinkus, repo list, a tags, italic, meta, spinner, 403)
+- [x] Build renderChapterTitle in ui.js + chapter title page CSS (scroll prompt with bounce + 4s fade)
 
