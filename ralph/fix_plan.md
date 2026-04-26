@@ -4,9 +4,6 @@
 
 ## Backlog
 
-### Phase 4 — Commit reader view
-- [ ] Write `tests/e2e/reader.spec.js`: mock API. Tests: navigate to `#/repo/linux` shows reader, chapter title page visible with repo name and "SCROLL TO BEGIN", commit pages render with titles and dates, decorative rule between title and body, scroll-snap active on container (check computed style), small-caps lead-in on first commit body, reading progress bar exists with accent color, page counter visible with correct format.
-
 ### Phase 5 — Routing + navigation
 - [ ] Implement hash routing in `js/app.js`: parse `#/` → repo list, `#/repo/{name}` → reader. Listen to `hashchange`. On route change: outgoing view fades out (opacity → 0, 250ms), then hidden. Incoming view fades in. On initial load, read hash and route. Implement reading position memory: save scroll position on leaving reader, restore on return to same repo. Cache repo list in DOM — don't re-render on back.
 - [ ] Add keyboard navigation: `keydown` listener. In reader view: `ArrowDown`/`Space`/`PageDown` → `scrollBy` one viewport height (triggers snap). `ArrowUp`/`PageUp` → scroll up one viewport. `Escape`/`Backspace` → navigate to `#/`. Prevent default on Space (don't scroll the page normally). Only active when reader view is visible.
@@ -33,4 +30,5 @@
 - [x] Build commit reader CSS: scroll snap container, commit page layout, reading column, decorative rule, lead-in, entry animation, metadata
 - [x] Build top bar CSS (fixed 48px, backdrop blur, back button 44x44, auto-hide) + reading progress bar (2px accent, z-200)
 - [x] Implement reader in app.js: data loading, IntersectionObserver entries, infinite scroll, progress bar, top bar auto-hide, scroll position memory
+- [x] Write tests/e2e/reader.spec.js: 9 tests passing (reader view, chapter title, scroll prompt, commits, decorative rule, snap, lead-in, progress bar, counter)
 
