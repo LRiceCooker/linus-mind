@@ -5,9 +5,6 @@
 ## Backlog
 
 ### Phase 4 — Commit reader view
-- [ ] Build the reading progress bar: fixed at top, `z-index: 200`, 2px height, `--accent` at 50% opacity, width based on `currentCommitIndex / totalCommits * 100%`, transition `width 300ms ease-out`. Only visible in reader view. Follow design.md §6.6.
-- [ ] Implement commit data loading and scroll logic in `js/app.js`: on route `#/repo/{name}`, render chapter title page as first snap point, then fetch commits page 1, reverse to chronological, render pages. Set up IntersectionObserver on each commit page to add `.visible` class (entry animation). Set up infinite scroll: detect when user nears the second-to-last page, fetch next batch, sort all by date, append new pages without scroll jump. Update progress bar width on scroll. Store scroll position per repo in a Map for reading position memory.
-- [ ] Implement top bar auto-hide: track `lastScrollTop` in scroll listener (throttled via `requestAnimationFrame`). If scrolling down > 80px from top → hide (opacity 0, translateY -100%, pointer-events none). If scrolling up → show. Transition 300ms ease. On mobile, threshold is 50px.
 - [ ] Write `tests/e2e/reader.spec.js`: mock API. Tests: navigate to `#/repo/linux` shows reader, chapter title page visible with repo name and "SCROLL TO BEGIN", commit pages render with titles and dates, decorative rule between title and body, scroll-snap active on container (check computed style), small-caps lead-in on first commit body, reading progress bar exists with accent color, page counter visible with correct format.
 
 ### Phase 5 — Routing + navigation
@@ -35,4 +32,5 @@
 - [x] Build renderCommitPage in ui.js: article with h2, decorative rule, body with small-caps lead-in, metadata footer, page counter
 - [x] Build commit reader CSS: scroll snap container, commit page layout, reading column, decorative rule, lead-in, entry animation, metadata
 - [x] Build top bar CSS (fixed 48px, backdrop blur, back button 44x44, auto-hide) + reading progress bar (2px accent, z-200)
+- [x] Implement reader in app.js: data loading, IntersectionObserver entries, infinite scroll, progress bar, top bar auto-hide, scroll position memory
 
