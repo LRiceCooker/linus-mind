@@ -70,6 +70,77 @@ export function renderChapterTitle(repo) {
   return page;
 }
 
+function extractLeadIn(text) {
+  // Take text up to first comma, period, colon, or dash — or first 4 words
+  const punctMatch = text.match(/^(.+?[,.:;\u2014-])/);
+  if (punctMatch && punctMatch[1].split(/\s+/).length <= 5) {
+    return { leadIn: punctMatch[1], rest: text.slice(punctMatch[1].length) };
+  }
+  const words = text.split(/\s+/);
+  if (words.length <= 4) {
+    return { leadIn: text, rest: '' };
+  }
+  const leadIn = words.slice(0, 4).join(' ');
+  return { leadIn, rest: text.slice(leadIn.length) };
+}
+
+export function renderCommitPage(commit, index, total, hasMore) {
+  const article = el('article', 'commit-page');
+
+  const column = el('div', 'reading-column');
+
+  // Title
+  const title = el('h2', 'commit-title', commit.title);
+  column.appendChild(title);
+
+  // Decorative rule + body (only if body exists)
+  if (commit.body) {
+    const rule = el('div', 'decorative-rule');
+    rule.setAttribute('aria-hidden', 'true');
+    column.appendChild(rule);
+
+    const body = el('div', 'commit-body');
+    // Apply lead-in to first line
+    const firstNewline = commit.body.indexOf('\n');
+    const firstLine = firstNewline >= 0 ? commit.body.slice(0, firstNewline) : commit.body;
+    const restLines = firstNewline >= 0 ? commit.body.slice(firstNewline) : '';
+
+    if (firstLine.trim()) {
+      const { leadIn, rest } = extractLeadIn(firstLine);
+      const leadSpan = el('span', 'lead-in', leadIn);
+      body.appendChild(leadSpan);
+      body.appendChild(document.createTextNode(rest + restLines));
+    } else {
+      body.textContent = commit.body;
+    }
+
+    column.appendChild(body);
+  }
+
+  // Metadata footer (pushed to bottom via margin-top: auto)
+  const footer = el('footer', 'commit-footer');
+
+  const metaRow = el('div', 'commit-meta-row');
+  const date = el('span', 'commit-date', commit.formattedDate);
+  metaRow.appendChild(date);
+  const sha = el('code', 'commit-sha', commit.sha);
+  metaRow.appendChild(sha);
+  footer.appendChild(metaRow);
+
+  const counterText = hasMore
+    ? `${index} / ${total}+`
+    : `${index} / ${total}`;
+  // Add padding around the slash
+  const counter = el('div', 'commit-counter');
+  counter.textContent = counterText;
+  footer.appendChild(counter);
+
+  column.appendChild(footer);
+  article.appendChild(column);
+
+  return article;
+}
+
 export function renderSpinner() {
   const wrapper = el('div', 'spinner-wrapper');
   wrapper.setAttribute('role', 'status');
