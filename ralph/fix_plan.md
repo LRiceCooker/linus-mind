@@ -5,7 +5,6 @@
 ## Backlog
 
 ### Phase 4 — Commit reader view
-- [ ] Build commit reader CSS: scroll container (`100dvh`, `scroll-snap-type: y mandatory`, `overscroll-behavior-y: contain`), commit page (flex column, `min-height: 100dvh`, `scroll-snap-align: start`), reading column (`max-width: 38rem`, centered), decorative rule, small-caps lead-in (`font-variant: small-caps`, weight 600, `letter-spacing: 0.05em`), commit entry animation (opacity 0 + translateY 12px → visible class adds opacity 1 + translateY 0, transition 400ms ease-out), chapter title page styles. Every value from design.md §6.3, §6.4, §8.
 - [ ] Build the top bar in HTML/CSS: fixed, 48px, `--bg-elevated` + `backdrop-filter: blur(16px)`, back button (`←` in serif, 44×44 tap target, hover/active/focus-visible states), repo name (Inter 500, secondary, truncated). Add `env(safe-area-inset-top)` padding for notched phones. Follow design.md §6.5 exactly.
 - [ ] Build the reading progress bar: fixed at top, `z-index: 200`, 2px height, `--accent` at 50% opacity, width based on `currentCommitIndex / totalCommits * 100%`, transition `width 300ms ease-out`. Only visible in reader view. Follow design.md §6.6.
 - [ ] Implement commit data loading and scroll logic in `js/app.js`: on route `#/repo/{name}`, render chapter title page as first snap point, then fetch commits page 1, reverse to chronological, render pages. Set up IntersectionObserver on each commit page to add `.visible` class (entry animation). Set up infinite scroll: detect when user nears the second-to-last page, fetch next batch, sort all by date, append new pages without scroll jump. Update progress bar width on scroll. Store scroll position per repo in a Map for reading position memory.
@@ -35,4 +34,5 @@
 - [x] Write tests/e2e/repos.spec.js: 9 tests all passing (title, dinkus, repo list, a tags, italic, meta, spinner, 403)
 - [x] Build renderChapterTitle in ui.js + chapter title page CSS (scroll prompt with bounce + 4s fade)
 - [x] Build renderCommitPage in ui.js: article with h2, decorative rule, body with small-caps lead-in, metadata footer, page counter
+- [x] Build commit reader CSS: scroll snap container, commit page layout, reading column, decorative rule, lead-in, entry animation, metadata
 
