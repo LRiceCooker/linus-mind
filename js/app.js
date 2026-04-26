@@ -275,23 +275,54 @@ function cleanupReader() {
 
 // --- Routing ---
 
-function showView(show, hide) {
-  hide.hidden = true;
-  show.hidden = false;
+let currentView = null;
+
+function transitionViews(incoming, outgoing) {
+  return new Promise(resolve => {
+    if (!outgoing || outgoing.hidden) {
+      incoming.hidden = false;
+      incoming.classList.add('view-visible');
+      incoming.classList.remove('view-hidden');
+      resolve();
+      return;
+    }
+
+    outgoing.classList.add('view-hidden');
+    outgoing.classList.remove('view-visible');
+
+    const onEnd = () => {
+      outgoing.removeEventListener('transitionend', onEnd);
+      outgoing.hidden = true;
+      incoming.hidden = false;
+      // Force reflow before adding visible class
+      incoming.offsetHeight;
+      incoming.classList.add('view-visible');
+      incoming.classList.remove('view-hidden');
+      resolve();
+    };
+
+    outgoing.addEventListener('transitionend', onEnd, { once: true });
+    // Fallback if transition doesn't fire
+    setTimeout(onEnd, 300);
+  });
 }
 
-function route() {
+async function route() {
   const hash = location.hash || '#/';
   const repoMatch = hash.match(/^#\/repo\/(.+)$/);
 
   if (repoMatch) {
     const repoName = decodeURIComponent(repoMatch[1]);
     cleanupReader();
-    showView(readerView, repoView);
+    const outgoing = !repoView.hidden ? repoView : null;
+    await transitionViews(readerView, outgoing);
+    currentView = 'reader';
     loadReader(repoName);
   } else {
     cleanupReader();
-    showView(repoView, readerView);
+    const outgoing = !readerView.hidden ? readerView : null;
+    await transitionViews(repoView, outgoing);
+    currentView = 'repo';
     loadRepoList();
   }
 }
