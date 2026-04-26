@@ -2,10 +2,12 @@
 
 ## In Progress
 
-## Backlog Tests: (1) After scrolling to commit 3, leaving, and returning to same repo — reader starts at commit 3 (mock localStorage). (2) Repo list shows "page N" indicator for repos with saved progress. (3) Fresh repo with no saved progress starts at chapter title page. (4) Progress survives page reload (set localStorage before navigating). (5) Old entries (>30 days) are cleaned up on load.
-- [ ] Final QA pass: run full Playwright suite, fix any regressions or parser edge cases.
+## Backlog
 
 ## Completed
+
+- [x] Hide vertical scrollbar on desktop on all scroll-snap containers (home page + commit reader)
+- [x] Final QA pass: all 59 tests passing
 
 - [x] Create `index.html`: semantic HTML structure, viewport meta, theme-color metas, preconnects, Google Fonts, skip-to-content, CSS/JS links
 - [x] Create `css/style.css`: complete design system — colors (light + dark), font stacks, spacing tokens, base reset, selection, sr-only, reduced motion

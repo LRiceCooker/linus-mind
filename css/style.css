@@ -163,6 +163,10 @@ body {
   overflow-y: auto;
   scroll-snap-type: y mandatory;
   overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+#repo-view::-webkit-scrollbar {
+  display: none;
 }
 
 /* -------------------------------------------------------------------
@@ -457,6 +461,10 @@ body {
   scroll-snap-type: y mandatory;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
+  scrollbar-width: none;
+}
+.scroll-container::-webkit-scrollbar {
+  display: none;
 }
 
 /* -------------------------------------------------------------------
