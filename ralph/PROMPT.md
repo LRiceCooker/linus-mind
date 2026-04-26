@@ -7,6 +7,7 @@ You are a development agent working on **linus-mind**, a minimalist literary web
 - `ralph/fix_plan.md`: prioritized task list
 - `ralph/specs/project.md`: full project specifications (screens, user flow, architecture, API, caching, E2E test specs)
 - `ralph/specs/design.md`: **design system** — colors, typography, spacing, components, responsive, accessibility. Follow **strictly and to the letter**. Every pixel matters.
+- `ralph/specs/typography-parser.md`: **typography parser spec** — how to transform raw commit text into beautifully typeset HTML (smart quotes, em dashes, code spans, blockquotes, trailers, paragraphs). Follow the transformation pipeline order exactly.
 
 ## Stack
 - Pure HTML5, CSS3, vanilla JavaScript (ES modules)

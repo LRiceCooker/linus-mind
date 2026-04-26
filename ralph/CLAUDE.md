@@ -50,10 +50,13 @@ tests/e2e/
 
 ## API rate limit strategy
 - 60 req/hour without token
-- Repo list: 1 request (cached in sessionStorage)
-- Commits: 1 request per 30 commits
-- Typical session: 3-4 repos, ~5 pages each = ~20 requests
-- On 403: show friendly message, keep all cached content readable
+- **ETag conditional requests**: every response's `ETag` is cached. On re-fetch, send `If-None-Match` — a `304` response is free (doesn't count against rate limit). This is the #1 lever.
+- **Repos TTL**: sessionStorage cache stores `{ data, etag, timestamp }`. If within 10 minutes, serve from cache with no fetch. If stale, make a conditional request.
+- **Commits**: in-memory Map stores `{ data, etag }`. No TTL needed — commit history is stable within a session.
+- **Rate-limit headers**: read `X-RateLimit-Remaining` and `X-RateLimit-Reset` from every non-304 response. Export `getRateLimitInfo()` for the UI layer.
+- When `remaining <= 5`: show a subtle warning bar. When `remaining === 0`: skip all fetches, serve from cache only.
+- On 403: show friendly message, keep all cached content readable.
+- See `ralph/specs/project.md` "Caching" section for the full spec.
 
 ## Learnings
 - CSS specificity: ID selectors (#repo-view) override class selectors (.view-visible). Use class-based selectors for view transitions.

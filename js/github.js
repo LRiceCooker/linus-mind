@@ -2,7 +2,11 @@
 
 const API_BASE = 'https://api.github.com';
 const REPOS_CACHE_KEY = 'linus-mind:repos';
+const REPOS_TTL = 600_000; // 10 minutes
 const commitCache = new Map();
+
+// Rate-limit state (updated on every non-304 response)
+let rateLimit = { remaining: null, resetAt: null };
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -48,20 +52,23 @@ function parseLinkHeader(header) {
   return links;
 }
 
-export async function fetchRepos() {
-  // Check sessionStorage cache first
-  const cached = sessionStorage.getItem(REPOS_CACHE_KEY);
-  if (cached) {
-    return JSON.parse(cached);
+function updateRateLimit(res) {
+  const remaining = res.headers.get('X-RateLimit-Remaining');
+  const reset = res.headers.get('X-RateLimit-Reset');
+  if (remaining !== null) {
+    rateLimit.remaining = parseInt(remaining, 10);
   }
+  if (reset !== null) {
+    rateLimit.resetAt = parseInt(reset, 10) * 1000; // convert to ms
+  }
+}
 
-  const res = await fetch(
-    `${API_BASE}/users/torvalds/repos?type=owner&sort=stars&direction=desc&per_page=100`
-  );
-  if (!res.ok) throw { status: res.status };
+export function getRateLimitInfo() {
+  return { remaining: rateLimit.remaining, resetAt: rateLimit.resetAt };
+}
 
-  const data = await res.json();
-  const repos = data
+function processReposData(data) {
+  return data
     .filter(r => !r.fork)
     .map(r => ({
       name: r.name,
@@ -70,27 +77,96 @@ export async function fetchRepos() {
       stars: formatStars(r.stargazers_count),
     }))
     .sort((a, b) => {
-      // Parse stars back to number for sorting
       const toNum = s => {
         if (s.endsWith('k')) return parseFloat(s) * 1000;
         return parseInt(s, 10);
       };
       return toNum(b.stars) - toNum(a.stars);
     });
+}
 
-  sessionStorage.setItem(REPOS_CACHE_KEY, JSON.stringify(repos));
+export async function fetchRepos() {
+  // Load cache from sessionStorage
+  let cached = null;
+  try {
+    const raw = sessionStorage.getItem(REPOS_CACHE_KEY);
+    if (raw) cached = JSON.parse(raw);
+  } catch { /* ignore corrupt cache */ }
+
+  // If cached and within TTL, return without fetching
+  if (cached?.data && cached.timestamp && Date.now() - cached.timestamp < REPOS_TTL) {
+    return cached.data;
+  }
+
+  // If rate limit exhausted, return cached if available
+  if (rateLimit.remaining === 0) {
+    if (cached?.data) return cached.data;
+    throw { status: 403 };
+  }
+
+  // Build conditional request headers
+  const headers = {};
+  if (cached?.etag) headers['If-None-Match'] = cached.etag;
+
+  const res = await fetch(
+    `${API_BASE}/users/torvalds/repos?type=owner&sort=stars&direction=desc&per_page=100`,
+    { headers }
+  );
+
+  // 304 Not Modified — data unchanged, refresh timestamp
+  if (res.status === 304) {
+    cached.timestamp = Date.now();
+    sessionStorage.setItem(REPOS_CACHE_KEY, JSON.stringify(cached));
+    return cached.data;
+  }
+
+  if (!res.ok) throw { status: res.status };
+
+  updateRateLimit(res);
+
+  const data = await res.json();
+  const repos = processReposData(data);
+  const etag = res.headers.get('ETag');
+
+  sessionStorage.setItem(REPOS_CACHE_KEY, JSON.stringify({
+    data: repos,
+    etag: etag || null,
+    timestamp: Date.now(),
+  }));
+
   return repos;
 }
 
 export async function fetchCommits(repo, page = 1) {
   const cacheKey = `${repo}:${page}`;
   const cached = commitCache.get(cacheKey);
-  if (cached) return cached;
+
+  // Commits have no TTL — if cached, return immediately
+  if (cached?.data) return cached.data;
+
+  // If rate limit exhausted, return cached if available
+  if (rateLimit.remaining === 0) {
+    if (cached?.data) return cached.data;
+    throw { status: 403 };
+  }
+
+  // Build conditional request headers
+  const headers = {};
+  if (cached?.etag) headers['If-None-Match'] = cached.etag;
 
   const res = await fetch(
-    `${API_BASE}/repos/torvalds/${repo}/commits?per_page=30&page=${page}`
+    `${API_BASE}/repos/torvalds/${repo}/commits?per_page=30&page=${page}`,
+    { headers }
   );
+
+  // 304 Not Modified — return cached data
+  if (res.status === 304) {
+    return cached.data;
+  }
+
   if (!res.ok) throw { status: res.status };
+
+  updateRateLimit(res);
 
   const data = await res.json();
   const links = parseLinkHeader(res.headers.get('Link'));
@@ -108,6 +184,7 @@ export async function fetchCommits(repo, page = 1) {
   });
 
   const result = { commits, hasMore };
-  commitCache.set(cacheKey, result);
+  const etag = res.headers.get('ETag');
+  commitCache.set(cacheKey, { data: result, etag: etag || null });
   return result;
 }

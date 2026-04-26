@@ -100,7 +100,7 @@ Load Inter in 400 (regular) and 500 (medium).
 
 | Element | Font | Desktop | Mobile (≤639px) | Weight | Line-height | Letter-spacing | Color |
 |---------|------|---------|-----------------|--------|-------------|----------------|-------|
-| **Book title "linus-mind"** | Source Serif 4 | `3rem` / `48px` | `2.25rem` / `36px` | 300 (light) | 1.1 | `-0.04em` | `--text` |
+| **Book title "linus-mind"** | Source Serif 4 | `3.5rem` / `56px` | `2.5rem` / `40px` | 300 (light) | 1.1 | `-0.04em` | `--text` |
 | **Tagline** | Inter | `0.875rem` / `14px` | `0.8125rem` / `13px` | 400 | 1.6 | `0.02em` | `--text-secondary` |
 | **Repo name** | Source Serif 4 | `1.375rem` / `22px` | `1.1875rem` / `19px` | 600 | 1.3 | `-0.01em` | `--text` |
 | **Repo description** | Source Serif 4 *italic* | `0.9375rem` / `15px` | `0.875rem` / `14px` | 400 | 1.55 | normal | `--text-secondary` |
@@ -163,33 +163,64 @@ Base unit: `4px`. All spacing is a multiple of 4.
 
 ## 6. Component specifications
 
-### 6.1 — The Hero (repo list header)
+### 6.1 — Cover page (full-screen book cover)
 
-The hero area is the **book cover**. It must feel expansive and contemplative.
+The cover takes the **entire viewport**. It's the first thing you see. Like opening a book to the title page. Nothing but the title, the void, and a gentle invitation to scroll.
 
 ```
-┌──────────────────────────── viewport width ────────────────────────────┐
+┌──────────────────────────── viewport ─────────────────────────────────┐
 │                                                                        │
 │                                                                        │
-│                                                                        │ ← min 25vh on desktop
-│                                                                        │   min 15vh on mobile
-│                          linus-mind                                    │ ← Source Serif 4 Light, 3rem
 │                                                                        │
-│              Reading the mind of Linus Torvalds,                       │ ← Inter, 0.875rem, secondary
+│                                                                        │
+│                                                                        │
+│                          linus-mind                                    │ ← Source Serif 4 Light, 3.5rem
+│                                                                        │
+│              reading the mind of linus torvalds,                       │ ← Inter, 0.875rem, secondary
 │                one commit at a time.                                   │
 │                                                                        │
-│                        ·  ·  ·                                         │ ← ornamental dots, tertiary
+│                        ·  ·  ·                                         │ ← dinkus, tertiary
 │                                                                        │
+│                                                                        │
+│                                                                        │
+│                                                                        │
+│                                                                        │
+│                                                                        │
+│                          ↓                                             │ ← bounce, fades after 4s
+│                                                                        │
+└────────────────────────────────────────────────────────────────────────┘
+
+═══════════ SCROLL SNAP ═══════════
+
+┌──────────────────────────── viewport ─────────────────────────────────┐
+│                                                                        │
+│         ┌───────── repo list (max 42rem) ──────────┐                  │
+│         │                                           │                  │
+│         │─────────────────────────────────────────  │                  │
+│         │ linux                                     │                  │
+│         │ Development kernel source tree             │                  │
+│         │ C · 456k ★                                │                  │
+│         │─────────────────────────────────────────  │                  │
+│         │ subsurface-for-dirk                       │                  │
+│         │ ...                                       │                  │
+│         └───────────────────────────────────────────┘                  │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-- The hero area uses `display: flex; flex-direction: column; align-items: center; justify-content: center;`
-- Min-height: `25vh` desktop, `15vh` mobile (don't waste too much mobile real estate)
-- Padding: `--space-16` top, `--space-12` bottom on desktop. `--space-10` top, `--space-8` bottom on mobile.
-- The title "linus-mind" is set in Source Serif 4 **Light** (weight 300) — not regular, not bold. Light weight at large sizes has an elegant, editorial quality.
-- The tagline is in Inter, with `letter-spacing: 0.02em` for that slightly airy feel. ALL LOWERCASE.
-- **Ornamental separator**: Three small dots (`·  ·  ·`) centered below the tagline, in `--text-tertiary`, `font-size: 0.75rem`, with `--space-6` gap from the tagline. This is a classic book design element — a subtle visual full stop that separates the header from the content.
-- Text alignment: center for everything in the hero.
+- The **home page is a scroll-snap container** (same mechanic as the reader):
+  - `height: 100dvh; overflow-y: auto; scroll-snap-type: y mandatory; overscroll-behavior-y: contain`
+- Cover page: `min-height: 100dvh; scroll-snap-align: start`
+- `display: flex; flex-direction: column; align-items: center; justify-content: center`
+- Title: Source Serif 4 **Light** (300), `3.5rem` desktop / `2.5rem` mobile, `letter-spacing: -0.04em`, `--text`. The title dominates — it's the only significant element on a full screen.
+- Tagline: Inter 400, `0.875rem`, `--text-secondary`, lowercase, `letter-spacing: 0.02em`. Gap: `--space-3` below title.
+- Dinkus: `·  ·  ·` in `--text-tertiary`, `font-size: 0.75rem`. Gap: `--space-8` below tagline.
+- Scroll arrow: `↓`, same bounce animation as the chapter title page (`1.8s ease-in-out infinite`). Positioned at the bottom third of the page. Fades out after 4s. `pointer-events: none; --text-tertiary`.
+- No borders, no backgrounds, no decorations — just the title floating in warm void.
+
+**Repo list section**: starts at the second snap point.
+- `min-height: 100dvh; scroll-snap-align: start`
+- Padding-top: `--space-16` (64px) for breathing room.
+- Contains the repo list (specs unchanged from §6.2).
 
 ### 6.2 — Repo card
 
