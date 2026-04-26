@@ -301,6 +301,17 @@ body {
   margin-top: var(--space-2);
 }
 
+.repo-progress {
+  display: block;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  font-style: italic;
+  color: var(--text-tertiary);
+  margin-top: var(--space-1);
+}
+
 @media (min-width: 640px) {
   .repo-name {
     font-size: 1.375rem;

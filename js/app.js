@@ -35,6 +35,69 @@ function filterEmptyCommits(commits) {
   return commits.filter(c => c.title.trim() || c.body.trim());
 }
 
+// --- Reading progress persistence ---
+const PROGRESS_KEY = 'linus-mind:progress';
+const PROGRESS_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
+const PROGRESS_MAX_ENTRIES = 20;
+
+function getAllProgress() {
+  try {
+    return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
+  } catch { return {}; }
+}
+
+function saveProgress(repo, data) {
+  const all = getAllProgress();
+  all[repo] = { ...data, updatedAt: Date.now() };
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
+}
+
+function loadProgress(repo) {
+  return getAllProgress()[repo] || null;
+}
+
+function cleanupProgress() {
+  const all = getAllProgress();
+  const now = Date.now();
+  // Remove entries older than 30 days
+  for (const key of Object.keys(all)) {
+    if (now - (all[key].updatedAt || 0) > PROGRESS_MAX_AGE) {
+      delete all[key];
+    }
+  }
+  // Cap at 20 entries — remove oldest
+  const entries = Object.entries(all);
+  if (entries.length > PROGRESS_MAX_ENTRIES) {
+    entries.sort((a, b) => (a[1].updatedAt || 0) - (b[1].updatedAt || 0));
+    const toRemove = entries.length - PROGRESS_MAX_ENTRIES;
+    for (let i = 0; i < toRemove; i++) {
+      delete all[entries[i][0]];
+    }
+  }
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
+}
+
+// Debounced progress save
+let progressSaveTimer = null;
+let currentCommitIndex = 0;
+
+function debouncedSaveProgress() {
+  if (progressSaveTimer) return;
+  progressSaveTimer = setTimeout(() => {
+    progressSaveTimer = null;
+    if (currentRepo) {
+      saveProgress(currentRepo, {
+        commitIndex: currentCommitIndex,
+        page: currentPage,
+        totalLoaded: allCommits.length,
+      });
+    }
+  }, 1000);
+}
+
+// Clean up old progress on app load
+cleanupProgress();
+
 // DOM references
 const repoView = document.getElementById('repo-view');
 const readerView = document.getElementById('reader-view');
@@ -70,7 +133,7 @@ async function loadRepoList() {
   try {
     const repos = await fetchRepos();
     checkRateLimit();
-    cachedRepoListEl = renderRepoList(repos);
+    cachedRepoListEl = renderRepoList(repos, getAllProgress());
     repoListSection.replaceChildren(cachedRepoListEl);
   } catch (err) {
     checkRateLimit();
@@ -174,16 +237,22 @@ function updateProgressBar() {
 
   const containerRect = scrollContainer.getBoundingClientRect();
   const containerCenter = containerRect.top + containerRect.height / 2;
-  let currentIndex = 0;
+  let activeIndex = 0;
 
   pages.forEach((page, i) => {
     const rect = page.getBoundingClientRect();
     if (rect.top <= containerCenter) {
-      currentIndex = i + 1;
+      activeIndex = i + 1;
     }
   });
 
-  const progress = (currentIndex / pages.length) * 100;
+  // Track current commit index for progress persistence
+  if (activeIndex > 0 && activeIndex !== currentCommitIndex) {
+    currentCommitIndex = activeIndex - 1; // 0-based
+    debouncedSaveProgress();
+  }
+
+  const progress = (activeIndex / pages.length) * 100;
   progressBar.style.width = `${progress}%`;
   progressBar.setAttribute('aria-valuenow', Math.round(progress));
 }
@@ -283,10 +352,22 @@ async function loadReader(repoName) {
     // Focus chapter title for accessibility
     chapterTitle.focus();
 
-    // Restore scroll position if returning
-    const savedPos = scrollPositions.get(repoName);
-    if (savedPos) {
-      scrollContainer.scrollTop = savedPos;
+    // Restore reading progress from localStorage
+    const savedProgress = loadProgress(repoName);
+    if (savedProgress && savedProgress.commitIndex > 0) {
+      const pages = scrollContainer.querySelectorAll('.commit-page');
+      const targetPage = pages[savedProgress.commitIndex];
+      if (targetPage) {
+        targetPage.classList.add('visible'); // ensure it's visible
+        targetPage.scrollIntoView({ behavior: 'instant' });
+        currentCommitIndex = savedProgress.commitIndex;
+      }
+    } else {
+      // Restore scroll position if returning within session
+      const savedPos = scrollPositions.get(repoName);
+      if (savedPos) {
+        scrollContainer.scrollTop = savedPos;
+      }
     }
   } catch (err) {
     checkRateLimit();
@@ -301,6 +382,8 @@ async function loadReader(repoName) {
 function cleanupReader() {
   if (currentRepo) {
     scrollPositions.set(currentRepo, scrollContainer.scrollTop);
+    // Invalidate cached repo list so progress indicator updates
+    cachedRepoListEl = null;
   }
   scrollContainer.removeEventListener('scroll', handleScroll);
   scrollContainer.removeEventListener('scroll', handlePromptHide);
@@ -388,6 +471,17 @@ window.addEventListener('keydown', (e) => {
       e.preventDefault();
       location.hash = '#/';
       break;
+  }
+});
+
+// Save progress on beforeunload
+window.addEventListener('beforeunload', () => {
+  if (currentRepo && allCommits.length > 0) {
+    saveProgress(currentRepo, {
+      commitIndex: currentCommitIndex,
+      page: currentPage,
+      totalLoaded: allCommits.length,
+    });
   }
 });
 

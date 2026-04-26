@@ -8,7 +8,7 @@ function el(tag, className, text) {
   return node;
 }
 
-export function renderRepoList(repos) {
+export function renderRepoList(repos, progressData = {}) {
   const list = el('div', 'repo-list-items');
 
   repos.forEach((repo, i) => {
@@ -31,6 +31,13 @@ export function renderRepoList(repos) {
     if (repo.stars) parts.push(`${repo.stars} \u2605`);
     meta.textContent = parts.join(' \u00B7 ');
     link.appendChild(meta);
+
+    // Show reading progress indicator
+    const progress = progressData[repo.name];
+    if (progress && progress.page) {
+      const indicator = el('span', 'repo-progress', `page ${progress.page}`);
+      link.appendChild(indicator);
+    }
 
     list.appendChild(link);
   });
