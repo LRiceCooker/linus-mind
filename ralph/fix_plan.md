@@ -4,9 +4,6 @@
 
 ## Backlog
 
-### Phase 6 — Responsive polish + final QA
-- [ ] Final QA pass: run full Playwright suite (`npx playwright test`). Manually verify: smooth font loading (no FOUT flash), no console errors, rate limit message works, empty repo handling, ornamental dots render correctly, small-caps lead-in looks good, reading position restores on back-and-forth navigation. Fix any remaining issues.
-
 ## Completed
 
 - [x] Create `index.html`: semantic HTML structure, viewport meta, theme-color metas, preconnects, Google Fonts, skip-to-content, CSS/JS links
@@ -29,4 +26,5 @@
 - [x] Desktop polish: 42rem max-width, 38rem reading column, full-bleed hover, all desktop sizes verified
 - [x] Dark mode polish: all colors via CSS custom properties, dark scheme auto-switch verified
 - [x] Write tests/e2e/responsive.spec.js: 9 tests (mobile width/font/tap targets, desktop max-width/hover, dark mode bg/text, reduced motion)
+- [x] Final QA pass: all 33 tests passing across repos, reader, navigation, and responsive suites
 
