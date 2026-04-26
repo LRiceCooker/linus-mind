@@ -2,6 +2,8 @@
 
 Reading the mind of Linus Torvalds, one commit at a time.
 
+**[lricecooker.github.io/linus-mind](https://lricecooker.github.io/linus-mind/)**
+
 A tiny web app that turns Linus' commit messages into a reading experience. Pick a repo, scroll through the commits like pages of a book. That's it.
 
 ## Why

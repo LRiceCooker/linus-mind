@@ -1,14 +1,14 @@
 {
   "name": "linus-mind",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Reading the mind of Linus Torvalds, one commit at a time.",
+  "homepage": "https://lricecooker.github.io/linus-mind/",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx playwright test --config tests/e2e/playwright.config.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "LRiceCooker",
+  "license": "Beerware",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "serve": "^14.2.6"
