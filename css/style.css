@@ -535,6 +535,98 @@ body {
 }
 
 /* -------------------------------------------------------------------
+   Top Bar — §6.5
+   ------------------------------------------------------------------- */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 48px;
+  padding: 0 var(--pad);
+  padding-top: env(safe-area-inset-top, 0);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--bg-elevated);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--divider);
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.top-bar.hidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--text);
+  transition: background 150ms ease;
+}
+
+.back-button:hover {
+  background: var(--bg-hover);
+}
+
+.back-button:active {
+  background: var(--bg-active);
+}
+
+.back-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.top-bar-title {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .top-bar-title {
+    font-size: 0.8125rem;
+  }
+}
+
+/* -------------------------------------------------------------------
+   Reading Progress Bar — §6.6
+   ------------------------------------------------------------------- */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  z-index: 200;
+  background: var(--accent);
+  opacity: 0.5;
+  width: 0%;
+  transition: width 300ms ease-out;
+}
+
+/* -------------------------------------------------------------------
    Spinner — §6.7
    ------------------------------------------------------------------- */
 .spinner-wrapper {
