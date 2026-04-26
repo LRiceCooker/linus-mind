@@ -1,10 +1,34 @@
 // app.js — Routing, view orchestration, events
 
-import { fetchRepos, fetchCommits } from './github.js';
+import { fetchRepos, fetchCommits, getRateLimitInfo } from './github.js';
 import {
   renderRepoList, renderChapterTitle, renderCommitPage,
   renderSpinner, renderError
 } from './ui.js';
+
+// Rate-limit bar
+const rateLimitBar = document.getElementById('rate-limit-bar');
+
+function checkRateLimit() {
+  const { remaining, resetAt } = getRateLimitInfo();
+  if (remaining === null || remaining > 5) {
+    rateLimitBar.style.display = 'none';
+    rateLimitBar.classList.remove('visible');
+    return;
+  }
+  rateLimitBar.style.display = '';
+  // Force reflow so the opacity transition fires
+  rateLimitBar.offsetHeight;
+  rateLimitBar.classList.add('visible');
+  if (remaining === 0 && resetAt) {
+    const d = new Date(resetAt);
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    rateLimitBar.textContent = `GitHub API limit reached \u2014 resets at ${hh}:${mm}.`;
+  } else {
+    rateLimitBar.textContent = 'GitHub API limit nearly reached \u2014 cached content still available.';
+  }
+}
 
 // DOM references
 const repoView = document.getElementById('repo-view');
@@ -40,9 +64,11 @@ async function loadRepoList() {
 
   try {
     const repos = await fetchRepos();
+    checkRateLimit();
     cachedRepoListEl = renderRepoList(repos);
     repoListSection.replaceChildren(cachedRepoListEl);
   } catch (err) {
+    checkRateLimit();
     const message = err.status === 403
       ? 'GitHub needs a moment. Come back shortly.'
       : 'Something went wrong.';
@@ -107,6 +133,7 @@ async function loadMoreCommits() {
 
   try {
     const result = await fetchCommits(currentRepo, currentPage);
+    checkRateLimit();
     const newCommits = result.commits.reverse();
     hasMoreCommits = result.hasMore;
 
@@ -220,6 +247,7 @@ async function loadReader(repoName) {
   try {
     // Fetch repo info for description
     const repos = await fetchRepos();
+    checkRateLimit();
     const repo = repos.find(r => r.name === repoName);
     if (repo && repo.description) {
       const nameEl = chapterTitle.querySelector('.chapter-name');
@@ -233,6 +261,7 @@ async function loadReader(repoName) {
     }
 
     const result = await fetchCommits(repoName, 1);
+    checkRateLimit();
     const commits = result.commits.reverse(); // chronological
     hasMoreCommits = result.hasMore;
     allCommits = commits;
@@ -255,6 +284,7 @@ async function loadReader(repoName) {
       scrollContainer.scrollTop = savedPos;
     }
   } catch (err) {
+    checkRateLimit();
     scrollContainer.removeChild(spinner);
     const message = err.status === 403
       ? 'GitHub needs a moment. Come back shortly.'

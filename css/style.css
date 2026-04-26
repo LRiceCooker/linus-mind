@@ -680,6 +680,31 @@ body {
 }
 
 /* -------------------------------------------------------------------
+   Rate-Limit Warning Bar
+   ------------------------------------------------------------------- */
+#rate-limit-bar {
+  position: fixed;
+  top: 2px;
+  left: 0;
+  width: 100%;
+  z-index: 199;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 8px;
+  background: var(--bg-hover);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+#rate-limit-bar.visible {
+  opacity: 1;
+}
+
+/* -------------------------------------------------------------------
    Reduced Motion — §8
    ------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
