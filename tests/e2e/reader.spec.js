@@ -85,8 +85,8 @@ test.describe('Commit Reader', () => {
     const counter = page.locator('.commit-counter').first();
     await expect(counter).toBeVisible({ timeout: 5000 });
     const text = await counter.textContent();
-    // Format: "N / M" or "N / M+"
-    expect(text).toMatch(/^\d+ \/ \d+\+?$/);
+    // Format: "N / M · X%" or "N / M+ · X%"
+    expect(text).toMatch(/^\d+ \/ \d+\+? · \d+%$/);
   });
 
   test('commit with empty message is not rendered', async ({ page }) => {

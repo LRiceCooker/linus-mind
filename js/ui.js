@@ -34,8 +34,12 @@ export function renderRepoList(repos, progressData = {}) {
 
     // Show reading progress indicator
     const progress = progressData[repo.name];
-    if (progress && progress.page) {
-      const indicator = el('span', 'repo-progress', `page ${progress.page}`);
+    if (progress && progress.totalLoaded > 0) {
+      const commitNum = progress.commitIndex + 1;
+      const pct = Math.round(commitNum / progress.totalLoaded * 100);
+      const hasMore = progress.page > 1 || progress.totalLoaded >= 30;
+      const text = `commit ${commitNum} / ${progress.totalLoaded}${hasMore ? '+' : ''} (${pct}%)`;
+      const indicator = el('span', 'repo-progress', text);
       link.appendChild(indicator);
     }
 
@@ -136,10 +140,10 @@ export function renderCommitPage(commit, index, total, hasMore) {
   metaRow.appendChild(sha);
   footer.appendChild(metaRow);
 
+  const pct = Math.round(index / total * 100);
   const counterText = hasMore
-    ? `${index} / ${total}+`
-    : `${index} / ${total}`;
-  // Add padding around the slash
+    ? `${index} / ${total}+ \u00B7 ${pct}%`
+    : `${index} / ${total} \u00B7 ${pct}%`;
   const counter = el('div', 'commit-counter');
   counter.textContent = counterText;
   footer.appendChild(counter);

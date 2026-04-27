@@ -5,9 +5,6 @@
 
 ## Backlog
 
-### Bugfix — Progress indicator on repo list
-- [ ] Fix the progress indicator in `js/ui.js` `renderRepoList`. Currently it shows `page ${progress.page}` which is the API page number (meaningless to the user). Change to show: `commit ${progress.commitIndex + 1}` and if `progress.totalLoaded` is known, append ` / ${progress.totalLoaded}${hasMore ? '+' : ''}`. Also show a percentage: `(${Math.round((progress.commitIndex + 1) / progress.totalLoaded * 100)}%)`. Example: "commit 42 / 128+ (33%)". If `totalLoaded` is 0 or missing, show nothing. Use the same styling: Inter, `0.6875rem`, `--text-tertiary`, italic. Also add percentage to the commit reader page counter (in `renderCommitPage`): change format from `12 / 847` to `12 / 847 · 1%`. Update E2E tests for the new format.
-
 ### Bugfix — Text overflow and layout on mobile
 - [ ] Fix text overflow issues while keeping the reading experience beautiful. The principle: **text should always wrap gracefully, never be cut brutally, and never cause horizontal scroll.** Different elements need different strategies:
   (1) **Commit title** (`.commit-title`): add `overflow-wrap: anywhere;` — this is the ONLY break property needed. It wraps long unbroken strings (like very long function names in titles) but only as a last resort. Do NOT use `word-break: break-all` (breaks normal words mid-syllable = ugly) or `hyphens: auto` (inserts random hyphens in technical words = confusing). If a title is still too long on mobile, the natural line-height and serif font handle multi-line gracefully.
@@ -72,4 +69,5 @@
 - [x] Simplify empty commit filtering — combined title+body check, SHA deduplication, tests for merge commits and duplicates
 - [x] Fix chronological order — sort by date after reverse on initial load, E2E test verifies oldest-first rendering
 - [x] Fix reading progress persistence — IntersectionObserver tracks index, multi-page restore, immediate save on navigate/unload
+- [x] Fix progress indicator — shows "commit N / M+ (X%)" on repo list and "N / M · X%" in reader counter
 

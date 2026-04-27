@@ -62,11 +62,13 @@ test.describe('Reading Progress', () => {
     await page.reload();
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
-    // Check for progress indicator
+    // Check for progress indicator — format: "commit 6 / 60+ (10%)"
     const indicator = page.locator('.repo-progress').first();
     await expect(indicator).toBeVisible();
     const text = await indicator.textContent();
-    expect(text).toContain('page 2');
+    expect(text).toContain('commit 6');
+    expect(text).toContain('/ 60+');
+    expect(text).toContain('(10%)');
   });
 
   test('fresh repo with no saved progress starts at chapter title page', async ({ page }) => {
