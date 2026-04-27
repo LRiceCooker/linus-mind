@@ -167,14 +167,80 @@ export async function checkWikipedia(word) {
   }
 }
 
-// --- Wiktionary API (stub — implemented in next task) ---
+// --- Wiktionary API ---
 
 async function checkWiktionary(word) {
   if (Date.now() < backoffs.wiktionary) {
     return { exists: false, url: null, title: null, source: 'wiktionary' };
   }
-  // Stub: will be implemented in a later task
-  return { exists: false, url: null, title: null, source: 'wiktionary' };
+
+  try {
+    const res = await fetch(
+      `https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`
+    );
+
+    if (res.status === 404) {
+      return { exists: false, url: null, title: null, source: 'wiktionary' };
+    }
+
+    if (res.status === 429 || res.status >= 500) {
+      backoffs.wiktionary = Date.now() + BACKOFF_MS;
+      return { exists: false, url: null, title: null, source: 'wiktionary' };
+    }
+
+    if (!res.ok) {
+      return { exists: false, url: null, title: null, source: 'wiktionary' };
+    }
+
+    const data = await res.json();
+
+    // Must have at least one language entry with definitions
+    if (!Array.isArray(data) || data.length === 0) {
+      return { exists: false, url: null, title: null, source: 'wiktionary' };
+    }
+
+    // Look through all language entries (prefer English)
+    let hasNoun = false;
+    let hasAnyDefinition = false;
+
+    for (const langEntry of data) {
+      if (!Array.isArray(langEntry.definitions)) continue;
+      for (const def of langEntry.definitions) {
+        if (def.definition) {
+          hasAnyDefinition = true;
+          if (def.partOfSpeech === 'noun') {
+            hasNoun = true;
+          }
+        }
+      }
+    }
+
+    if (!hasAnyDefinition) {
+      return { exists: false, url: null, title: null, source: 'wiktionary' };
+    }
+
+    // Skip words that only have adjective/adverb definitions (likely common words)
+    if (!hasNoun) {
+      const onlyAdjectiveAdverb = data.every(langEntry =>
+        (langEntry.definitions || []).every(def =>
+          def.partOfSpeech === 'adjective' || def.partOfSpeech === 'adverb'
+        )
+      );
+      if (onlyAdjectiveAdverb) {
+        return { exists: false, url: null, title: null, source: 'wiktionary' };
+      }
+    }
+
+    return {
+      exists: true,
+      url: `https://en.wiktionary.org/wiki/${encodeURIComponent(word)}`,
+      title: word,
+      source: 'wiktionary',
+    };
+  } catch {
+    backoffs.wiktionary = Date.now() + BACKOFF_MS;
+    return { exists: false, url: null, title: null, source: 'wiktionary' };
+  }
 }
 
 // --- Wikidata API (stub — implemented in next task) ---
