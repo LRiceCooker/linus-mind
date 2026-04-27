@@ -3,10 +3,7 @@
 ## In Progress
 
 
-## Backlog
-
-### Bugfix — Text overflow and layout on mobile
-- [ ] Fix text overflow issues while keeping the reading experience beautiful. The principle: **text should always wrap gracefully, never be cut brutally, and never cause horizontal scroll.** Different elements need different strategies:
+## Backlog The principle: **text should always wrap gracefully, never be cut brutally, and never cause horizontal scroll.** Different elements need different strategies:
   (1) **Commit title** (`.commit-title`): add `overflow-wrap: anywhere;` — this is the ONLY break property needed. It wraps long unbroken strings (like very long function names in titles) but only as a last resort. Do NOT use `word-break: break-all` (breaks normal words mid-syllable = ugly) or `hyphens: auto` (inserts random hyphens in technical words = confusing). If a title is still too long on mobile, the natural line-height and serif font handle multi-line gracefully.
   (2) **Commit body** (`.commit-body`, `.commit-body p`): already has `white-space: pre-wrap` which handles most wrapping. Add `overflow-wrap: anywhere;` as safety net for rare long unbroken strings. The body text at 17px on mobile with `line-height: 1.9` naturally wraps beautifully — don't touch that.
   (3) **Code blocks** (`.commit-body .code-block`): these are the ONE place where horizontal scroll is acceptable and expected. Keep `white-space: pre; overflow-x: auto;`. Add `-webkit-overflow-scrolling: touch;` for iOS. Add a subtle visual hint that it scrolls: a faint `box-shadow: inset -12px 0 8px -8px var(--bg)` on the right edge (fades the text into the background, signaling "there's more"). On mobile code blocks should have slightly smaller font: `font-size: 0.8em` instead of `0.85em`.
@@ -70,4 +67,5 @@
 - [x] Fix chronological order — sort by date after reverse on initial load, E2E test verifies oldest-first rendering
 - [x] Fix reading progress persistence — IntersectionObserver tracks index, multi-page restore, immediate save on navigate/unload
 - [x] Fix progress indicator — shows "commit N / M+ (X%)" on repo list and "N / M · X%" in reader counter
+- [x] Fix text overflow on mobile — overflow-wrap on titles/body/code/lists, code block scroll hint, reading-column overflow:hidden, long-name class
 

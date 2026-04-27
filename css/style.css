@@ -384,6 +384,11 @@ body {
   line-height: 1.15;
   letter-spacing: -0.03em;
   color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.chapter-name.long-name {
+  font-size: 1.625rem;
 }
 
 .chapter-description {
@@ -493,6 +498,7 @@ body {
   width: 100%;
   margin: 0 auto;
   padding: 64px var(--pad) calc(32px + env(safe-area-inset-bottom, 0px));
+  overflow: hidden;
 }
 
 @media (min-width: 640px) {
@@ -509,6 +515,7 @@ body {
   line-height: 1.35;
   letter-spacing: -0.015em;
   color: var(--text);
+  overflow-wrap: anywhere;
 }
 
 @media (min-width: 640px) {
@@ -532,8 +539,7 @@ body {
   letter-spacing: 0.003em;
   color: var(--text);
   white-space: pre-wrap;
-  word-break: break-word;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 @media (min-width: 640px) {
@@ -557,6 +563,7 @@ body {
   background: var(--bg-hover);
   padding: 0.1em 0.35em;
   border-radius: 3px;
+  overflow-wrap: anywhere;
 }
 
 /* -------------------------------------------------------------------
@@ -574,6 +581,13 @@ body {
   color: var(--text);
   white-space: pre;
   -webkit-overflow-scrolling: touch;
+  box-shadow: inset -12px 0 8px -8px var(--bg);
+}
+
+@media (max-width: 639px) {
+  .commit-body .code-block {
+    font-size: 0.8em;
+  }
 }
 
 .commit-body .code-block code {
@@ -606,6 +620,7 @@ body {
 .commit-body li {
   margin-bottom: var(--space-2);
   padding-left: var(--space-1);
+  overflow-wrap: anywhere;
 }
 
 .commit-body ul {
@@ -660,7 +675,7 @@ body {
 .commit-body p {
   margin-bottom: var(--space-4);
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .commit-body p:last-of-type {

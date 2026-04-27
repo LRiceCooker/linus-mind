@@ -56,6 +56,7 @@ export function renderChapterTitle(repo) {
   const content = el('div', 'chapter-title-content');
 
   const name = el('h1', 'chapter-name', repo.name);
+  if (repo.name.length > 20) name.classList.add('long-name');
   content.appendChild(name);
 
   if (repo.description) {
