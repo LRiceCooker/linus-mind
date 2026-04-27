@@ -2,8 +2,6 @@
 
 ## In Progress
 
-- [ ] Write E2E tests in `tests/e2e/typography.spec.js` (add to existing suite): (a) `[ And again, just to clarify: ... ]` renders as `.bracket-note`, (b) `[-1,1]` is NOT wrapped in `.bracket-note` (math notation preserved), (c) `@zeelsheladiya` renders as `<a>` with href to GitHub profile, (d) `[ NOTE! ... ]` has both `.bracket-note` and `.callout` styling, (e) `NOTE!` inside regular text (not at line start) still gets `.callout` styling.
-
 ### Final QA
 - [ ] Final QA pass: run full Playwright suite, verify Wikipedia links are more relevant (no false positives on common concepts), case-insensitive dedup works, bracket notes render correctly, @mentions are linked, NOTE! callouts work everywhere. Fix any regressions.
 
@@ -58,4 +56,5 @@
 - [x] Add bracket annotation handling — `[ text ]` wrapped in `.bracket-note`, math notations `[0,1]` preserved, multi-line support, callouts inside brackets
 - [x] Add @username GitHub link detection — `@user` → GitHub profile link with `.github-mention` class, lookbehind prevents matching inside emails/URLs
 - [x] Add CSS for .bracket-note and .github-mention — bracket annotations with italic/border-left, mentions with dotted underline matching wiki-link style
+- [x] Write E2E tests for bracket notes, math notation preservation, @mentions, NOTE! inside brackets and inline — 5 new tests, all passing
 

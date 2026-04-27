@@ -125,7 +125,7 @@ test.describe('Typography', () => {
   });
 
   test('URLs become clickable <a> tags', async ({ page }) => {
-    // Third commit (cccc, last by date) has a URL
+    // Third commit (cccc, index 2 by date) has a URL
     const link = page.locator('.commit-body').nth(2).locator('.url').first();
     await expect(link).toBeVisible();
     const tagName = await link.evaluate(el => el.tagName.toLowerCase());
@@ -133,5 +133,54 @@ test.describe('Typography', () => {
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
     await expect(link).toHaveAttribute('href', 'https://lkml.org/lkml/2024/1/15/100');
+  });
+
+  test('[ And again, just to clarify: ... ] renders as .bracket-note', async ({ page }) => {
+    // Fourth commit (dddd, index 3) has bracket annotations
+    const bracket = page.locator('.commit-body').nth(3).locator('.bracket-note').first();
+    await expect(bracket).toBeVisible();
+    const text = await bracket.textContent();
+    expect(text).toContain('And again, just to clarify');
+  });
+
+  test('[-1,1] is NOT wrapped in .bracket-note (math notation preserved)', async ({ page }) => {
+    // Fourth commit has [-1,1] which should NOT be a bracket note
+    const body = page.locator('.commit-body').nth(3);
+    await expect(body).toBeVisible();
+    const bodyText = await body.textContent();
+    expect(bodyText).toContain('[-1,1]');
+    // Math notation should not be inside a bracket-note
+    const bracketNotes = await body.locator('.bracket-note').allTextContents();
+    for (const note of bracketNotes) {
+      expect(note).not.toContain('[-1,1]');
+    }
+  });
+
+  test('@zeelsheladiya renders as <a> with href to GitHub profile', async ({ page }) => {
+    // Fourth commit has @zeelsheladiya mention
+    const mention = page.locator('.commit-body').nth(3).locator('.github-mention').first();
+    await expect(mention).toBeVisible();
+    await expect(mention).toHaveText('@zeelsheladiya');
+    await expect(mention).toHaveAttribute('href', 'https://github.com/zeelsheladiya');
+    await expect(mention).toHaveAttribute('target', '_blank');
+  });
+
+  test('[ NOTE! ... ] has both .bracket-note and .callout styling', async ({ page }) => {
+    // Fourth commit has [ NOTE! This is important context. ]
+    const bracketWithNote = page.locator('.commit-body').nth(3).locator('.bracket-note').nth(1);
+    await expect(bracketWithNote).toBeVisible();
+    const callout = bracketWithNote.locator('.callout');
+    await expect(callout).toBeVisible();
+    await expect(callout).toContainText('NOTE');
+  });
+
+  test('NOTE! inside regular text (not at line start) gets .callout styling', async ({ page }) => {
+    // Fourth commit has "Also this text has NOTE! in the middle of a sentence."
+    const body = page.locator('.commit-body').nth(3);
+    await expect(body).toBeVisible();
+    // There should be a callout for this inline NOTE!
+    const callouts = await body.locator('.callout').allTextContents();
+    const hasInlineNote = callouts.some(t => t.includes('NOTE'));
+    expect(hasInlineNote).toBe(true);
   });
 });
