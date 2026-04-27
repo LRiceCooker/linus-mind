@@ -3,20 +3,7 @@
 ## In Progress
 
 
-## Backlog The principle: **text should always wrap gracefully, never be cut brutally, and never cause horizontal scroll.** Different elements need different strategies:
-  (1) **Commit title** (`.commit-title`): add `overflow-wrap: anywhere;` — this is the ONLY break property needed. It wraps long unbroken strings (like very long function names in titles) but only as a last resort. Do NOT use `word-break: break-all` (breaks normal words mid-syllable = ugly) or `hyphens: auto` (inserts random hyphens in technical words = confusing). If a title is still too long on mobile, the natural line-height and serif font handle multi-line gracefully.
-  (2) **Commit body** (`.commit-body`, `.commit-body p`): already has `white-space: pre-wrap` which handles most wrapping. Add `overflow-wrap: anywhere;` as safety net for rare long unbroken strings. The body text at 17px on mobile with `line-height: 1.9` naturally wraps beautifully — don't touch that.
-  (3) **Code blocks** (`.commit-body .code-block`): these are the ONE place where horizontal scroll is acceptable and expected. Keep `white-space: pre; overflow-x: auto;`. Add `-webkit-overflow-scrolling: touch;` for iOS. Add a subtle visual hint that it scrolls: a faint `box-shadow: inset -12px 0 8px -8px var(--bg)` on the right edge (fades the text into the background, signaling "there's more"). On mobile code blocks should have slightly smaller font: `font-size: 0.8em` instead of `0.85em`.
-  (4) **Inline code** (`.commit-body code`): add `overflow-wrap: anywhere;` — this lets long inline code break if needed, but only at the boundary of the inline element, not in the middle of normal text. Do NOT use `break-all` — it would break short code like `ptr` across lines.
-  (5) **Lists** (`.commit-body li`): add `overflow-wrap: anywhere;`. Lists with long technical content (paths, function names) should wrap within the list item, not overflow the reading column.
-  (6) **URLs** (`.commit-body .url`): keep `word-break: break-all` — URLs are the exception where breaking anywhere is expected and looks natural.
-  (7) **Chapter title repo name** (`.chapter-name`): add `overflow-wrap: anywhere;`. For repos with long hyphenated names like `subsurface-for-dirk`, the name should wrap naturally at hyphens first, then break if needed. On mobile, consider reducing font-size to `1.625rem` instead of `1.875rem` if the name is very long (detect via JS: if name.length > 20, add class `.long-name` that reduces size).
-  (8) **Reading column** (`.reading-column`): add `overflow: hidden;` as the final safety net. This ensures that even if something unexpected overflows, it's clipped instead of causing horizontal scroll on the whole page.
-  (9) **Global**: `body` should already have `overflow-x: hidden` — verify it's there.
-  Test at 320px (iPhone SE) AND 375px (iPhone 13 mini) to verify everything looks beautiful — no awkward breaks, no horizontal scroll, code blocks scroll smoothly. Run Playwright mobile tests after.
-
-### Feature — Clickable URLs in commit messages
-- [ ] Update `js/typography.js` step 13 (URLs): change the output from `<span class="url">` to `<a class="url" href="{url}" target="_blank" rel="noopener noreferrer">`. The URL detection regex stays the same (`https?://[^\s)]+`). Update the CSS for `.commit-body .url` in `css/style.css`: add `text-decoration: none`, `border-bottom: 1px dotted var(--text-tertiary)`, `transition: border-color 200ms ease`. Add `:hover` state: `border-bottom-color: var(--accent)`. Add `:focus-visible` state: `outline: 2px solid var(--accent); outline-offset: 2px`. The style must be consistent with Wikipedia smart links (same dotted underline, same hover behavior). Update `tests/e2e/typography.spec.js` to verify URLs are now `<a>` tags with `target="_blank"` and `rel="noopener noreferrer"`.
+## Backlog
 
 ### Feature — Wikipedia smart links
 - [ ] Create `js/wordlist.js`: export a `Set` of the top ~3000 most common English words. Source the list from a public domain frequency list. Include common programming terms too (function, variable, return, class, type, null, void, etc.) to avoid false positives. Also include common git/development terms (commit, merge, branch, patch, fix, bug, test, etc.). The file will be ~25-30KB. Export as `export const COMMON_WORDS = new Set([...])`.
@@ -68,4 +55,5 @@
 - [x] Fix reading progress persistence — IntersectionObserver tracks index, multi-page restore, immediate save on navigate/unload
 - [x] Fix progress indicator — shows "commit N / M+ (X%)" on repo list and "N / M · X%" in reader counter
 - [x] Fix text overflow on mobile — overflow-wrap on titles/body/code/lists, code block scroll hint, reading-column overflow:hidden, long-name class
+- [x] Clickable URLs — typography step 13 outputs `<a>` tags with dotted underline, hover/focus states, E2E test
 

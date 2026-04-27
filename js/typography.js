@@ -240,8 +240,9 @@ export function typeset(rawText) {
   // Step 12: Paragraphs
   text = processParagraphs(text);
 
-  // Step 13: URLs
-  text = text.replace(/https?:\/\/[^\s)<]+[^\s)<.,;:!?]/g, '<span class="url">$&</span>');
+  // Step 13: URLs — clickable links
+  text = text.replace(/https?:\/\/[^\s)<]+[^\s)<.,;:!?]/g,
+    '<a class="url" href="$&" target="_blank" rel="noopener noreferrer">$&</a>');
 
   // Step 14: Reinject structural blocks
   codeBlocks.forEach((code, i) => {

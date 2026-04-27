@@ -123,4 +123,15 @@ test.describe('Typography', () => {
     expect(text).toContain('line_one     = first');
     expect(text).toContain('line_two     = second');
   });
+
+  test('URLs become clickable <a> tags', async ({ page }) => {
+    // Third commit (cccc, last by date) has a URL
+    const link = page.locator('.commit-body').nth(2).locator('.url').first();
+    await expect(link).toBeVisible();
+    const tagName = await link.evaluate(el => el.tagName.toLowerCase());
+    expect(tagName).toBe('a');
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(link).toHaveAttribute('href', 'https://lkml.org/lkml/2024/1/15/100');
+  });
 });
