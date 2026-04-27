@@ -16,7 +16,7 @@ function mockAPIs(page) {
 test.describe('Typography', () => {
   test.beforeEach(async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
   });
 

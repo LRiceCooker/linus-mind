@@ -221,8 +221,8 @@ export function typeset(rawText) {
   text = text.replace(/(^|[\s(])\*([^\s*][^*]*[^\s*])\*(?=[\s),.\u2014!?:;\u2026]|$)/gm, '$1<em>$2</em>');
   text = text.replace(/(^|[\s(])\*([^\s*]+)\*(?=[\s),.\u2014!?:;\u2026]|$)/gm, '$1<em>$2</em>');
 
-  // Step 7: Callouts
-  text = text.replace(/^(NOTE!|NOTE:|IMPORTANT!|IMPORTANT:|WARNING!|WARNING:|FIXME:|TODO:)/gm,
+  // Step 7: Callouts — match at line start, after whitespace, or after `[ `
+  text = text.replace(/\b((?:NOTE|IMPORTANT|WARNING|FIXME|TODO)\s?[!:])/g,
     '<strong class="callout">$1</strong>');
 
   // Step 8: Continuation lines (.. )
