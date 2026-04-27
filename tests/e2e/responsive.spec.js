@@ -18,7 +18,7 @@ test.describe('Mobile — iPhone 13', () => {
 
   test('content fills width', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
@@ -28,7 +28,7 @@ test.describe('Mobile — iPhone 13', () => {
 
   test('body text font-size >= 14px', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     const bodyFontSize = await page.locator('.commit-body').first().evaluate(
@@ -39,7 +39,7 @@ test.describe('Mobile — iPhone 13', () => {
 
   test('back button tap target >= 44px', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.back-button')).toBeVisible();
 
     const size = await page.locator('.back-button').evaluate(el => {
@@ -52,7 +52,7 @@ test.describe('Mobile — iPhone 13', () => {
 
   test('repo cards are tappable links', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     const card = page.locator('.repo-card').first();
     await expect(card).toBeVisible();
 
@@ -66,7 +66,7 @@ test.describe('Desktop — 1440px', () => {
 
   test('content centered with max-width', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
     const repoListWidth = await page.locator('.repo-list').evaluate(
@@ -78,7 +78,7 @@ test.describe('Desktop — 1440px', () => {
 
   test('repo card hover changes background', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     const card = page.locator('.repo-card').first();
     await expect(card).toBeVisible();
 
@@ -97,7 +97,7 @@ test.describe('Dark mode', () => {
 
   test('background color matches dark --bg', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.hero-title')).toBeVisible();
 
     const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
@@ -107,7 +107,7 @@ test.describe('Dark mode', () => {
 
   test('text color matches dark --text', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.hero-title')).toBeVisible();
 
     const color = await page.locator('.hero-title').evaluate(
@@ -123,7 +123,7 @@ test.describe('Reduced motion', () => {
 
   test('transitions are near zero', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.hero-title')).toBeVisible();
 
     const duration = await page.locator('.view-visible').first().evaluate(

@@ -2,8 +2,6 @@
 
 ## In Progress
 
-### Final QA
-- [ ] Final QA pass: run full Playwright suite, verify Wikipedia links are more relevant (no false positives on common concepts), case-insensitive dedup works, bracket notes render correctly, @mentions are linked, NOTE! callouts work everywhere. Fix any regressions.
 
 ## Completed
 
@@ -57,4 +55,5 @@
 - [x] Add @username GitHub link detection — `@user` → GitHub profile link with `.github-mention` class, lookbehind prevents matching inside emails/URLs
 - [x] Add CSS for .bracket-note and .github-mention — bracket annotations with italic/border-left, mentions with dotted underline matching wiki-link style
 - [x] Write E2E tests for bracket notes, math notation preservation, @mentions, NOTE! inside brackets and inline — 5 new tests, all passing
+- [x] Final QA pass: all 75 tests passing, fixed Playwright test URLs (relative → absolute), no regressions
 

@@ -19,24 +19,24 @@ test.describe('Commit Reader', () => {
   });
 
   test('navigating to #/repo/linux shows reader view', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('#reader-view')).toBeVisible();
     await expect(page.locator('#repo-view')).toBeHidden();
   });
 
   test('chapter title page shows repo name', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.chapter-name')).toHaveText('linux');
   });
 
   test('"SCROLL TO BEGIN" is visible initially', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.scroll-prompt-text')).toHaveText('SCROLL TO BEGIN');
     await expect(page.locator('.scroll-prompt')).toBeVisible();
   });
 
   test('commit pages render with titles and dates', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     const commitPages = page.locator('.commit-page');
     await expect(commitPages.first()).toBeVisible({ timeout: 5000 });
 
@@ -49,14 +49,14 @@ test.describe('Commit Reader', () => {
   });
 
   test('decorative rule between title and body', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     // Find a commit page that has a body (decorative rule only when body exists)
     const rule = page.locator('.commit-page .decorative-rule').first();
     await expect(rule).toBeVisible({ timeout: 5000 });
   });
 
   test('scroll-snap is active on container', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     const snapType = await page.locator('.scroll-container').evaluate(
       el => getComputedStyle(el).scrollSnapType
     );
@@ -64,7 +64,7 @@ test.describe('Commit Reader', () => {
   });
 
   test('small-caps lead-in on commit body', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     const leadIn = page.locator('.lead-in').first();
     await expect(leadIn).toBeVisible({ timeout: 5000 });
     const fontVariant = await leadIn.evaluate(el => getComputedStyle(el).fontVariant);
@@ -72,7 +72,7 @@ test.describe('Commit Reader', () => {
   });
 
   test('reading progress bar exists with accent color', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     const bar = page.locator('.progress-bar');
     await expect(bar).toBeAttached();
     const bg = await bar.evaluate(el => getComputedStyle(el).backgroundColor);
@@ -81,7 +81,7 @@ test.describe('Commit Reader', () => {
   });
 
   test('page counter visible with correct format', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     const counter = page.locator('.commit-counter').first();
     await expect(counter).toBeVisible({ timeout: 5000 });
     const text = await counter.textContent();
@@ -90,7 +90,7 @@ test.describe('Commit Reader', () => {
   });
 
   test('commit with empty message is not rendered', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     // The fixtures include a commit with whitespace-only message (sha: empty123...)
@@ -107,7 +107,7 @@ test.describe('Commit Reader', () => {
   });
 
   test('merge commit with real message IS rendered', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     // The first commit in fixtures is a merge commit — it should be rendered
@@ -117,7 +117,7 @@ test.describe('Commit Reader', () => {
   });
 
   test('duplicate commits with same SHA are deduplicated', async ({ page }) => {
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     // Fixture has a duplicate (d0e1f2a) — should appear only once
@@ -141,7 +141,7 @@ test.describe('Commit Reader', () => {
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(outOfOrder) })
     );
 
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     const titles = await page.locator('.commit-title').allTextContents();

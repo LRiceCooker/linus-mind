@@ -27,7 +27,7 @@ function mockAPIs(page, { repoCallCount } = {}) {
 test.describe('Navigation', () => {
   test('back button returns to repo list', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('#reader-view')).toBeVisible();
 
     await page.locator('.back-button').click();
@@ -37,14 +37,14 @@ test.describe('Navigation', () => {
 
   test('direct URL #/repo/linux loads reader on fresh load', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('#reader-view')).toBeVisible();
     await expect(page.locator('.chapter-name')).toHaveText('linux');
   });
 
   test('browser back button works', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
     // Navigate to reader
@@ -58,7 +58,7 @@ test.describe('Navigation', () => {
 
   test('Escape key navigates back', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('#reader-view')).toBeVisible();
 
     await page.keyboard.press('Escape');
@@ -69,7 +69,7 @@ test.describe('Navigation', () => {
     const repoCallCount = [];
     await mockAPIs(page, { repoCallCount });
 
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
     // Navigate to reader then back
@@ -88,7 +88,7 @@ test.describe('Navigation', () => {
 
   test('view transitions have opacity change', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
     // Wait for view transition animation to complete (250ms + margin)

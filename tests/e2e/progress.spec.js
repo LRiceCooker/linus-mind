@@ -21,7 +21,7 @@ test.describe('Reading Progress', () => {
     await mockAPIs(page);
 
     // Pre-set progress in localStorage: commit index 2 for linux
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.hero-title')).toBeVisible();
     await page.evaluate((key) => {
       localStorage.setItem(key, JSON.stringify({
@@ -30,7 +30,7 @@ test.describe('Reading Progress', () => {
     }, PROGRESS_KEY);
 
     // Navigate to the reader
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     // Wait for scroll restoration
@@ -50,7 +50,7 @@ test.describe('Reading Progress', () => {
     await mockAPIs(page);
 
     // Pre-set progress
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.hero-title')).toBeVisible();
     await page.evaluate((key) => {
       localStorage.setItem(key, JSON.stringify({
@@ -73,7 +73,7 @@ test.describe('Reading Progress', () => {
 
   test('fresh repo with no saved progress starts at chapter title page', async ({ page }) => {
     await mockAPIs(page);
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.chapter-title')).toBeVisible();
 
     // Chapter title should be near the top (not scrolled away)
@@ -88,7 +88,7 @@ test.describe('Reading Progress', () => {
     await mockAPIs(page);
 
     // Set localStorage before navigation
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.hero-title')).toBeVisible();
     await page.evaluate((key) => {
       localStorage.setItem(key, JSON.stringify({
@@ -97,7 +97,7 @@ test.describe('Reading Progress', () => {
     }, PROGRESS_KEY);
 
     // Navigate to reader, progress should be restored
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
     await page.waitForTimeout(500);
 
@@ -113,7 +113,7 @@ test.describe('Reading Progress', () => {
     await mockAPIs(page);
 
     // Set old progress entry (31 days ago)
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.hero-title')).toBeVisible();
     const oldTimestamp = Date.now() - 31 * 24 * 60 * 60 * 1000;
     await page.evaluate(({ key, ts }) => {

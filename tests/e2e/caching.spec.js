@@ -27,7 +27,7 @@ test.describe('Caching & Rate Limit', () => {
       })
     );
 
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
     // Navigate to reader
@@ -67,7 +67,7 @@ test.describe('Caching & Rate Limit', () => {
     });
 
     // First load — gets 200 + ETag
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
     expect(requestCount).toBe(1);
 
@@ -106,7 +106,7 @@ test.describe('Caching & Rate Limit', () => {
       })
     );
 
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
     const bar = page.locator('#rate-limit-bar');
@@ -139,7 +139,7 @@ test.describe('Caching & Rate Limit', () => {
       });
     });
 
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
     const bar = page.locator('#rate-limit-bar');
@@ -166,7 +166,7 @@ test.describe('Caching & Rate Limit', () => {
       });
     });
 
-    await page.goto('/');
+    await page.goto('http://localhost:3000/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
     expect(repoCallCount).toBe(1);
 
@@ -205,7 +205,7 @@ test.describe('Caching & Rate Limit', () => {
     });
 
     // Navigate to reader
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
     expect(commitCallCount).toBe(1);
 
