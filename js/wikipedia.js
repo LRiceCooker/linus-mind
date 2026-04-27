@@ -63,6 +63,9 @@ export function isCandidate(word) {
   // Common English word
   if (COMMON_WORDS.has(word.toLowerCase())) return false;
 
+  // Hyphenated terms — technical compound (copy-on-write, x86-64, write-back)
+  if (word.includes('-')) return true;
+
   // ALL_CAPS (3+ chars) — strong candidate (TLB, RISC, DMA, ACPI)
   if (/^[A-Z][A-Z0-9]{2,}$/.test(word)) return true;
 
@@ -139,7 +142,7 @@ function extractCandidatesFromElement(element) {
       continue;
     }
 
-    const words = node.textContent.match(/[A-Za-z][A-Za-z0-9]{2,}/g);
+    const words = node.textContent.match(/[A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/g);
     if (words) {
       for (const word of words) {
         if (isCandidate(word)) candidates.add(word);
@@ -222,19 +225,45 @@ export async function enhanceWithWikiLinks(commitBodyElement) {
     for (const word of batch) {
       if (lookupCount >= MAX_LOOKUPS_PER_PAGE) break;
 
-      // Check cache first
+      let fullFormResolved = false;
+
+      // Check cache first for full word
       const cached = getCached(word);
       if (cached) {
         if (cached.exists && cached.url) {
           wrapWordInLink(commitBodyElement, word, cached.url);
+          continue;
         }
-        continue; // Don't count cached as a lookup
+        fullFormResolved = true; // negative cache hit
       }
 
-      lookupCount++;
-      const result = await checkWikipedia(word);
-      if (result.exists && result.url) {
-        wrapWordInLink(commitBodyElement, word, result.url);
+      if (!fullFormResolved) {
+        lookupCount++;
+        const result = await checkWikipedia(word);
+        if (result.exists && result.url) {
+          wrapWordInLink(commitBodyElement, word, result.url);
+          continue;
+        }
+      }
+
+      // Full form failed — for hyphenated words, try individual parts
+      if (word.includes('-')) {
+        const parts = word.split('-').filter(p => isCandidate(p));
+        for (const part of parts) {
+          if (lookupCount >= MAX_LOOKUPS_PER_PAGE) break;
+          const partCached = getCached(part);
+          if (partCached) {
+            if (partCached.exists && partCached.url) {
+              wrapWordInLink(commitBodyElement, part, partCached.url);
+            }
+            continue;
+          }
+          lookupCount++;
+          const partResult = await checkWikipedia(part);
+          if (partResult.exists && partResult.url) {
+            wrapWordInLink(commitBodyElement, part, partResult.url);
+          }
+        }
       }
     }
 
