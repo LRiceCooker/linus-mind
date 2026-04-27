@@ -225,6 +225,47 @@ export function typeset(rawText) {
   text = text.replace(/\b((?:NOTE|IMPORTANT|WARNING|FIXME|TODO)\s?[!:])/g,
     '<strong class="callout">$1</strong>');
 
+  // Step 7b: Bracket annotations [ text... ]
+  // Detect [ <text> ] where char after [ is a letter or space (not math notation)
+  {
+    const lines = text.split('\n');
+    const out = [];
+    let inBracket = false;
+
+    for (const line of lines) {
+      if (!inBracket) {
+        // Check for opening bracket: [ followed by letter or space (not digit, -, .)
+        const openMatch = line.match(/^(\s*)\[ ?([A-Za-z\s])/);
+        if (openMatch) {
+          inBracket = true;
+          if (line.trimEnd().endsWith(']')) {
+            // Single-line bracket annotation
+            const content = line.replace(/^\s*\[\s?/, '').replace(/\s?\]\s*$/, '');
+            out.push(`<span class="bracket-note">${content}</span>`);
+            inBracket = false;
+          } else {
+            const content = line.replace(/^\s*\[\s?/, '');
+            out.push(`<span class="bracket-note">${content}`);
+          }
+        } else {
+          out.push(line);
+        }
+      } else {
+        // Inside a multi-line bracket annotation
+        if (line.trimEnd().endsWith(']')) {
+          const content = line.replace(/\s?\]\s*$/, '');
+          out.push(`${content}</span>`);
+          inBracket = false;
+        } else {
+          out.push(line);
+        }
+      }
+    }
+    // Close unclosed bracket
+    if (inBracket) out.push('</span>');
+    text = out.join('\n');
+  }
+
   // Step 8: Continuation lines (.. )
   text = text.replace(/^\.\. (.+)$/gm, '<span class="continuation">\u2014 $1</span>');
 
