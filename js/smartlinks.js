@@ -389,25 +389,33 @@ async function checkGitHub(word) {
 // --- Resolution chain ---
 
 async function checkAllSources(word) {
-  // 1. Wikipedia
-  const wikiResult = await checkWikipedia(word);
-  if (wikiResult.exists) return wikiResult;
+  const now = Date.now();
 
-  // 2. Wiktionary
-  const wiktResult = await checkWiktionary(word);
-  if (wiktResult.exists) return wiktResult;
+  // 1. Wikipedia — skip if in backoff
+  if (now >= backoffs.wikipedia) {
+    const wikiResult = await checkWikipedia(word);
+    if (wikiResult.exists) return wikiResult;
+  }
 
-  // 3. Wikidata
-  const wdResult = await checkWikidata(word);
-  if (wdResult.exists) return wdResult;
+  // 2. Wiktionary — skip if in backoff
+  if (now >= backoffs.wiktionary) {
+    const wiktResult = await checkWiktionary(word);
+    if (wiktResult.exists) return wiktResult;
+  }
 
-  // 4. GitHub — only for project-like names
-  if (looksLikeProjectName(word)) {
+  // 3. Wikidata — skip if in backoff
+  if (now >= backoffs.wikidata) {
+    const wdResult = await checkWikidata(word);
+    if (wdResult.exists) return wdResult;
+  }
+
+  // 4. GitHub — only for project-like names, skip if in backoff
+  if (looksLikeProjectName(word) && now >= backoffs.github) {
     const ghResult = await checkGitHub(word);
     if (ghResult.exists) return ghResult;
   }
 
-  // All sources failed — return negative result
+  // All sources exhausted or in backoff — return negative result
   return { exists: false, url: null, title: null, source: null };
 }
 
