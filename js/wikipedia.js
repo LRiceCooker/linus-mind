@@ -28,7 +28,7 @@ function saveCache(cache) {
 
 function getCached(word) {
   const cache = loadCache();
-  const entry = cache[word];
+  const entry = cache[word.toLowerCase()];
   if (!entry) return null;
   if (Date.now() - entry.checkedAt > CACHE_TTL) return null;
   return entry;
@@ -36,7 +36,7 @@ function getCached(word) {
 
 function setCache(word, result) {
   const cache = loadCache();
-  cache[word] = { ...result, checkedAt: Date.now() };
+  cache[word.toLowerCase()] = { ...result, checkedAt: Date.now() };
 
   // Prune oldest if over limit
   const keys = Object.keys(cache);
@@ -131,7 +131,8 @@ export async function checkWikipedia(word) {
 // --- DOM enhancement ---
 
 function extractCandidatesFromElement(element) {
-  const candidates = new Set();
+  // Map from lowercase → first-seen casing (for case-insensitive dedup)
+  const seen = new Map();
   const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
 
   let node;
@@ -145,15 +146,24 @@ function extractCandidatesFromElement(element) {
     const words = node.textContent.match(/[A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/g);
     if (words) {
       for (const word of words) {
-        if (isCandidate(word)) candidates.add(word);
+        const key = word.toLowerCase();
+        if (!seen.has(key) && isCandidate(word)) {
+          seen.set(key, word); // store first occurrence's casing
+        }
       }
     }
   }
 
-  return Array.from(candidates);
+  return Array.from(seen.values());
 }
 
 function wrapWordInLink(element, word, url) {
+  // Build a case-insensitive whole-word regex
+  const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = new RegExp(`(?<![\\w])${escaped}(?![\\w])`, 'i');
+
+  // Collect all matching text nodes first, then mutate (avoids walker invalidation)
+  const nodesToWrap = [];
   const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
   let node;
 
@@ -162,33 +172,40 @@ function wrapWordInLink(element, word, url) {
     if (parent && parent.closest('code, pre, blockquote, .commit-trailers, .wiki-link, a')) {
       continue;
     }
+    if (pattern.test(node.textContent)) {
+      nodesToWrap.push(node);
+    }
+  }
 
-    const idx = node.textContent.indexOf(word);
-    if (idx === -1) continue;
+  for (const textNode of nodesToWrap) {
+    // Split text node into parts, wrapping all matches
+    const parts = [];
+    let remaining = textNode.textContent;
 
-    // Only wrap whole-word matches
-    const before = node.textContent[idx - 1];
-    const after = node.textContent[idx + word.length];
-    if (before && /\w/.test(before)) continue;
-    if (after && /\w/.test(after)) continue;
+    while (remaining) {
+      const match = pattern.exec(remaining);
+      if (!match) {
+        parts.push(document.createTextNode(remaining));
+        break;
+      }
+      if (match.index > 0) {
+        parts.push(document.createTextNode(remaining.slice(0, match.index)));
+      }
+      const link = document.createElement('a');
+      link.className = 'wiki-link';
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = match[0]; // preserve original casing
+      parts.push(link);
+      remaining = remaining.slice(match.index + match[0].length);
+    }
 
-    const textBefore = node.textContent.slice(0, idx);
-    const textAfter = node.textContent.slice(idx + word.length);
-
-    const link = document.createElement('a');
-    link.className = 'wiki-link';
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.textContent = word;
-
-    const frag = document.createDocumentFragment();
-    if (textBefore) frag.appendChild(document.createTextNode(textBefore));
-    frag.appendChild(link);
-    if (textAfter) frag.appendChild(document.createTextNode(textAfter));
-
-    node.parentNode.replaceChild(frag, node);
-    return; // Only wrap first occurrence per word
+    if (parts.length > 1) {
+      const frag = document.createDocumentFragment();
+      for (const part of parts) frag.appendChild(part);
+      textNode.parentNode.replaceChild(frag, textNode);
+    }
   }
 }
 
