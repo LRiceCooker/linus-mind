@@ -693,6 +693,36 @@ body {
 }
 
 /* -------------------------------------------------------------------
+   Typography — Bracket annotations
+   ------------------------------------------------------------------- */
+.commit-body .bracket-note {
+  display: block;
+  font-size: 0.95em;
+  font-style: italic;
+  color: var(--text-secondary);
+  border-left: 2px solid var(--divider);
+  padding-left: var(--space-3);
+  margin: var(--space-3) 0;
+}
+
+/* -------------------------------------------------------------------
+   Typography — GitHub @mentions
+   ------------------------------------------------------------------- */
+.commit-body .github-mention {
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--text-tertiary);
+  transition: border-color 200ms ease;
+}
+.commit-body .github-mention:hover {
+  border-bottom-color: var(--accent);
+}
+.commit-body .github-mention:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------
    Typography — Paragraphs
    ------------------------------------------------------------------- */
 .commit-body p {
