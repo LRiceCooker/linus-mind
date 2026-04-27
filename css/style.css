@@ -480,14 +480,6 @@ body {
   flex-direction: column;
   min-height: 100dvh;
   scroll-snap-align: start;
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 400ms ease-out, transform 400ms ease-out;
-}
-
-.commit-page.visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .reading-column {

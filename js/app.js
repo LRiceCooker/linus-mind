@@ -125,7 +125,6 @@ let allCommits = [];
 let currentPage = 0;
 let hasMoreCommits = false;
 let isLoadingMore = false;
-let entryObserver = null;
 let infiniteScrollObserver = null;
 
 // --- Repo list ---
@@ -155,28 +154,8 @@ async function loadRepoList() {
 
 // --- Reader ---
 
-function setupEntryObserver() {
-  if (entryObserver) entryObserver.disconnect();
-  entryObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        // Update currentCommitIndex from visible commit page position
-        const pages = Array.from(scrollContainer.querySelectorAll('.commit-page'));
-        const idx = pages.indexOf(entry.target);
-        if (idx >= 0 && idx !== currentCommitIndex) {
-          currentCommitIndex = idx;
-          debouncedSaveProgress();
-        }
-      }
-    });
-  }, { root: scrollContainer, threshold: 0.3 });
-}
-
 function observeCommitPages() {
-  scrollContainer.querySelectorAll('.commit-page').forEach(page => {
-    entryObserver.observe(page);
-  });
+  // No-op — entry animation removed (caused invisible pages)
 }
 
 function setupInfiniteScroll() {
@@ -333,7 +312,7 @@ async function loadReader(repoName) {
   const spinner = renderSpinner();
   scrollContainer.appendChild(spinner);
 
-  setupEntryObserver();
+
 
   // Add scroll listeners
   scrollContainer.addEventListener('scroll', handleScroll);
@@ -400,7 +379,6 @@ async function loadReader(repoName) {
       const pages = scrollContainer.querySelectorAll('.commit-page');
       const targetPage = pages[savedProgress.commitIndex];
       if (targetPage) {
-        targetPage.classList.add('visible');
         targetPage.scrollIntoView({ behavior: 'instant' });
         currentCommitIndex = savedProgress.commitIndex;
       }
@@ -430,7 +408,6 @@ function cleanupReader() {
   }
   scrollContainer.removeEventListener('scroll', handleScroll);
   scrollContainer.removeEventListener('scroll', handlePromptHide);
-  if (entryObserver) entryObserver.disconnect();
   if (infiniteScrollObserver) infiniteScrollObserver.disconnect();
 }
 
