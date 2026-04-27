@@ -30,9 +30,17 @@ function checkRateLimit() {
   }
 }
 
-// Filter out commits with empty/whitespace-only messages
+// Filter out commits with empty/whitespace-only messages and deduplicate by SHA
 function filterEmptyCommits(commits) {
-  return commits.filter(c => c.title.trim() || c.body.trim());
+  const seen = new Set();
+  return commits.filter(c => {
+    // Skip if entire message is empty/whitespace
+    if (!(c.title + c.body).trim()) return false;
+    // Deduplicate consecutive commits with same SHA
+    if (seen.has(c.sha)) return false;
+    seen.add(c.sha);
+    return true;
+  });
 }
 
 // --- Reading progress persistence ---

@@ -99,9 +99,30 @@ test.describe('Commit Reader', () => {
     const hasEmpty = allShas.some(sha => sha.startsWith('empty12'));
     expect(hasEmpty).toBe(false);
 
-    // Total in page counter should reflect filtered count (10 valid commits, not 11)
+    // Total in page counter should reflect filtered count (10 valid commits, not 12)
+    // 12 raw commits - 1 empty - 1 duplicate = 10
     const counter = page.locator('.commit-counter').first();
     const text = await counter.textContent();
     expect(text).toContain('/ 10');
+  });
+
+  test('merge commit with real message IS rendered', async ({ page }) => {
+    await page.goto('/#/repo/linux');
+    await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
+
+    // The first commit in fixtures is a merge commit — it should be rendered
+    const titles = await page.locator('.commit-title').allTextContents();
+    const hasMerge = titles.some(t => t.startsWith('Merge tag'));
+    expect(hasMerge).toBe(true);
+  });
+
+  test('duplicate commits with same SHA are deduplicated', async ({ page }) => {
+    await page.goto('/#/repo/linux');
+    await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
+
+    // Fixture has a duplicate (d0e1f2a) — should appear only once
+    const allShas = await page.locator('.commit-sha').allTextContents();
+    const d0Count = allShas.filter(sha => sha === 'd0e1f2a').length;
+    expect(d0Count).toBe(1);
   });
 });

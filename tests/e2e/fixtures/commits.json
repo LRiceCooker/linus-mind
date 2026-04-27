@@ -97,5 +97,14 @@
         "date": "2023-12-28T10:00:00Z"
       }
     }
+  },
+  {
+    "sha": "d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9",
+    "commit": {
+      "message": "Happy New Year, and let's make 2024 the year of good commit messages\n\nDuplicate entry from overlapping pages.",
+      "author": {
+        "date": "2023-12-28T10:00:00Z"
+      }
+    }
   }
 ]
