@@ -20,6 +20,15 @@ function mockAPIs(page) {
     page.route('**/api.github.com/repos/torvalds/*/commits**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(wikiCommits) })
     ),
+    // Mock GitHub search API (used by smartlinks resolution chain fallback)
+    page.route('**/api.github.com/search/repositories**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ total_count: 0, items: [] }),
+      })
+    ),
   ]);
 }
 
@@ -183,6 +192,15 @@ test.describe('Wikipedia Smart Links', () => {
     );
     await page.route('**/api.github.com/repos/torvalds/*/commits**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(driverCommits) })
+    );
+    // Mock GitHub search API (smartlinks resolution chain fallback)
+    await page.route('**/api.github.com/search/repositories**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ total_count: 0, items: [] }),
+      })
     );
 
     // Track Wikipedia API calls — none should happen for "Driver", "Memory", "Computer"

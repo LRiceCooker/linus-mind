@@ -5,7 +5,7 @@ import {
   renderRepoList, renderChapterTitle, renderCommitPage,
   renderSpinner, renderError
 } from './ui.js';
-import { enhanceWithWikiLinks } from './wikipedia.js';
+import { enhanceWithSmartLinks } from './smartlinks.js';
 
 // Rate-limit bar
 const rateLimitBar = document.getElementById('rate-limit-bar');
@@ -214,7 +214,7 @@ async function loadMoreCommits() {
 
     // Enhance with Wikipedia links (fire-and-forget)
     scrollContainer.querySelectorAll('.commit-body').forEach(el => {
-      enhanceWithWikiLinks(el);
+      enhanceWithSmartLinks(el);
     });
 
     if (spinner) scrollContainer.appendChild(spinner);
@@ -365,7 +365,7 @@ async function loadReader(repoName) {
 
     // Enhance with Wikipedia links (fire-and-forget, async)
     scrollContainer.querySelectorAll('.commit-body').forEach(el => {
-      enhanceWithWikiLinks(el);
+      enhanceWithSmartLinks(el);
     });
 
     observeCommitPages();

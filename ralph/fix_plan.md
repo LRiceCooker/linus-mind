@@ -3,6 +3,16 @@
 ## In Progress
 
 
+## Backlog
+
+### Feature — Multi-source smart link resolution
+- [ ] Add Wiktionary lookup in `js/smartlinks.js`. API: `https://en.wiktionary.org/api/rest_v1/page/definition/{word}`. A word is considered a valid technical term if the response (status 200) contains at least one definition. Extract the first definition's `partOfSpeech` — prefer "noun" entries (concepts are nouns). Link URL: `https://en.wiktionary.org/wiki/{word}`. If the response is 404 or the only definitions are common English words (adjective/adverb for basic words), skip. Wiktionary is great for domain-specific jargon that doesn't have a full Wikipedia article (audio processing terms, electronics terms, diving terms). Cache with `source: "wiktionary"`.
+- [ ] Add Wikidata entity lookup in `js/smartlinks.js`. API: `https://www.wikidata.org/w/api.php?action=wbsearchentities&search={word}&language=en&limit=1&format=json&origin=*`. A word is a valid concept if the response returns at least one result where `label` matches the word (case-insensitive) and `description` exists. Link URL: the entity's Wikipedia article if available (check `sitelinks.enwiki` in a follow-up fetch to `https://www.wikidata.org/w/api.php?action=wbgetentities&ids={id}&props=sitelinks&format=json&origin=*`), otherwise link to the Wikidata page `https://www.wikidata.org/wiki/{id}`. This catches concepts that exist as structured entities but may not have standalone Wikipedia articles. Cache with `source: "wikidata"`.
+- [ ] Update the resolution chain order and rate-limit management in `js/smartlinks.js`. Each source has its own backoff timer (don't let a Wikipedia rate-limit block Wiktionary lookups). Structure: `const backoffs = { wikipedia: 0, wiktionary: 0, wikidata: 0, github: 0 }`. The `checkAllSources(word)` function tries sources in order, skipping any source that is currently in backoff. On 429/5xx from any source, set that source's backoff to `Date.now() + 60_000`. Total lookups per page remain capped at 20 (across all sources combined). Batch processing (5 at a time, 200ms delay) remains the same.
+- [ ] Update localStorage cache format. Cache key remains `linus-mind:wiki-cache`. Each entry now has: `{ exists: boolean, url: string|null, title: string|null, source: string|null, checkedAt: number }`. Old cache entries without `source` field are treated as `"wikipedia"` for backwards compatibility. Max entries remains 500, TTL remains 7 days.
+- [ ] Write E2E tests in `tests/e2e/smartlinks.spec.js` (rename from `wikipedia.spec.js` or add new file). Mock all 4 APIs. Tests: (1) Word found on Wikipedia → `.wiki-link` with Wikipedia URL. (2) Word NOT on Wikipedia but found on Wiktionary → `.wiki-link` with Wiktionary URL. (3) Word not on Wikipedia or Wiktionary but found as Wikidata entity with enwiki sitelink → `.wiki-link` with Wikipedia URL from sitelink. (4) Word not on any wiki source but found on GitHub (>100 stars) → `.github-link`. (5) Word not found anywhere → no link. (6) All sources rate-limited → no crash, text displays normally. (7) Existing tests from wikipedia.spec.js still pass (TLB, common words, word list, etc.).
+- [ ] Final QA pass: run full Playwright suite, verify the resolution chain works in order, check that audio/electronics/diving terms from Linus' non-Linux repos get better coverage. Fix any regressions.
+
 ## Completed
 
 - [x] Create `index.html`: semantic HTML structure, viewport meta, theme-color metas, preconnects, Google Fonts, skip-to-content, CSS/JS links
@@ -56,4 +66,5 @@
 - [x] Add CSS for .bracket-note and .github-mention — bracket annotations with italic/border-left, mentions with dotted underline matching wiki-link style
 - [x] Write E2E tests for bracket notes, math notation preservation, @mentions, NOTE! inside brackets and inline — 5 new tests, all passing
 - [x] Final QA pass: all 75 tests passing, fixed Playwright test URLs (relative → absolute), no regressions
+- [x] Refactor `js/wikipedia.js` into `js/smartlinks.js` — resolution chain (Wikipedia → Wiktionary → Wikidata → GitHub), per-source backoffs, `enhanceWithSmartLinks`, `source` field in cache, backwards compat for old entries
 
