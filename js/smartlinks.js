@@ -243,14 +243,98 @@ async function checkWiktionary(word) {
   }
 }
 
-// --- Wikidata API (stub — implemented in next task) ---
+// --- Wikidata API ---
 
 async function checkWikidata(word) {
   if (Date.now() < backoffs.wikidata) {
     return { exists: false, url: null, title: null, source: 'wikidata' };
   }
-  // Stub: will be implemented in a later task
-  return { exists: false, url: null, title: null, source: 'wikidata' };
+
+  try {
+    // Step 1: Search for the entity
+    const searchRes = await fetch(
+      `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(word)}&language=en&limit=1&format=json&origin=*`
+    );
+
+    if (searchRes.status === 429 || searchRes.status >= 500) {
+      backoffs.wikidata = Date.now() + BACKOFF_MS;
+      return { exists: false, url: null, title: null, source: 'wikidata' };
+    }
+
+    if (!searchRes.ok) {
+      return { exists: false, url: null, title: null, source: 'wikidata' };
+    }
+
+    const searchData = await searchRes.json();
+
+    if (!searchData.search || searchData.search.length === 0) {
+      return { exists: false, url: null, title: null, source: 'wikidata' };
+    }
+
+    const entity = searchData.search[0];
+
+    // Validate: label must match (case-insensitive) and description must exist
+    if (!entity.label || entity.label.toLowerCase() !== word.toLowerCase()) {
+      return { exists: false, url: null, title: null, source: 'wikidata' };
+    }
+
+    if (!entity.description) {
+      return { exists: false, url: null, title: null, source: 'wikidata' };
+    }
+
+    const entityId = entity.id;
+
+    // Step 2: Check for enwiki sitelink
+    const entityRes = await fetch(
+      `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${entityId}&props=sitelinks&format=json&origin=*`
+    );
+
+    if (entityRes.status === 429 || entityRes.status >= 500) {
+      backoffs.wikidata = Date.now() + BACKOFF_MS;
+      // Still have entity info, link to Wikidata page
+      return {
+        exists: true,
+        url: `https://www.wikidata.org/wiki/${entityId}`,
+        title: entity.label,
+        source: 'wikidata',
+      };
+    }
+
+    if (!entityRes.ok) {
+      // Fallback to Wikidata page
+      return {
+        exists: true,
+        url: `https://www.wikidata.org/wiki/${entityId}`,
+        title: entity.label,
+        source: 'wikidata',
+      };
+    }
+
+    const entityData = await entityRes.json();
+    const sitelinks = entityData.entities?.[entityId]?.sitelinks;
+
+    if (sitelinks?.enwiki?.title) {
+      // Has a Wikipedia article — link there
+      const wikiTitle = sitelinks.enwiki.title;
+      return {
+        exists: true,
+        url: `https://en.wikipedia.org/wiki/${encodeURIComponent(wikiTitle)}`,
+        title: wikiTitle,
+        source: 'wikidata',
+      };
+    }
+
+    // No enwiki sitelink — link to Wikidata page
+    return {
+      exists: true,
+      url: `https://www.wikidata.org/wiki/${entityId}`,
+      title: entity.label,
+      source: 'wikidata',
+    };
+  } catch {
+    backoffs.wikidata = Date.now() + BACKOFF_MS;
+    return { exists: false, url: null, title: null, source: 'wikidata' };
+  }
 }
 
 // --- GitHub API fallback ---
