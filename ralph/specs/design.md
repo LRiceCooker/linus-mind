@@ -591,7 +591,7 @@ This is a reading app disguised as a website. Anything that reminds the user the
 
 - No hamburger menus, no sidebars, no drawers
 - No footer of any kind
-- No social buttons, share links, or external links
+- No social buttons or share links. External links are OK only for: (1) URLs already present in commit messages (clickable, new tab), (2) Wikipedia smart links on technical terms (new tab). Both are subtle — dotted underline, secondary color, never intrusive.
 - No tooltips, popovers, or hover cards
 - No toasts, snackbars, or notifications
 - No modals, dialogs, or overlays

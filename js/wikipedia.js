@@ -2,7 +2,7 @@
 // Async post-render enhancement: detect candidate words, check Wikipedia API,
 // add subtle dotted-underline links. Non-blocking, cached in localStorage.
 
-import { COMMON_WORDS } from './wordlist.js';
+import { COMMON_WORDS, loadWordList, isWordListLoaded } from './wordlist.js';
 
 const CACHE_KEY = 'linus-mind:wiki-cache';
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -195,6 +195,11 @@ function delay(ms) {
 
 export async function enhanceWithWikiLinks(commitBodyElement) {
   if (!commitBodyElement) return;
+
+  // Ensure word list is loaded before checking candidates
+  if (!isWordListLoaded()) {
+    await loadWordList();
+  }
 
   const candidates = extractCandidatesFromElement(commitBodyElement);
   if (candidates.length === 0) return;

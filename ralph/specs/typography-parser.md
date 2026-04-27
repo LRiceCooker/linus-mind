@@ -292,8 +292,9 @@ CSS:
 
 ### Step 13 — URLs
 - Detect bare URLs: `https?://[^\s)]+`
-- Wrap in `<span class="url">`
-- NOT clickable (no `<a>` tags — this is a reading app)
+- Wrap in `<a class="url" href="{url}" target="_blank" rel="noopener noreferrer">`
+- Opens in a new tab on desktop. On mobile, the same `target="_blank"` opens a new tab that the user can close to return to reading — this does NOT interrupt the reading experience.
+- Style is subtle and consistent with Wikipedia smart links: monospace, smaller, secondary color, dotted underline. The link should not scream "click me" — it's there if you need it.
 
 CSS:
 ```css
@@ -301,7 +302,17 @@ CSS:
   font-family: var(--font-mono);
   font-size: 0.85em;
   color: var(--text-secondary);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--text-tertiary);
   word-break: break-all;
+  transition: border-color 200ms ease;
+}
+.commit-body .url:hover {
+  border-bottom-color: var(--accent);
+}
+.commit-body .url:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 ```
 
@@ -386,7 +397,7 @@ In `js/ui.js`, the `renderCommitPage` function currently sets the body text. Cha
 
 - Don't convert Markdown syntax (`**bold**`, `## header`, `[link](url)`) — Linus doesn't write Markdown
 - Don't syntax-highlight code blocks — this is a reader, not a code editor
-- Don't make URLs clickable — no external links (design.md §11)
+- ~~Don't make URLs clickable~~ — UPDATED: URLs ARE now clickable `<a>` tags, opening in new tabs (`target="_blank"`). Style is subtle (dotted underline, monospace, secondary color).
 - Don't touch indentation within code blocks — preserve exactly
 - Don't create `<h3>` or sub-headers from lines ending with `:` — they're just prose
 - Don't convert `#123` to issue links

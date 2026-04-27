@@ -46,7 +46,7 @@ test.describe('Wikipedia Smart Links', () => {
       return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
     });
 
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     // Wait for async wiki enhancement
@@ -65,7 +65,7 @@ test.describe('Wikipedia Smart Links', () => {
       return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
     });
 
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     // Wait a moment for any async enhancements to happen
@@ -87,7 +87,7 @@ test.describe('Wikipedia Smart Links', () => {
       route.fulfill({ status: 404, contentType: 'application/json', body: '{}' })
     );
 
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     // Wait for async enhancements
@@ -118,7 +118,7 @@ test.describe('Wikipedia Smart Links', () => {
       return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
     });
 
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     const wikiLink = page.locator('.commit-body .wiki-link').first();
@@ -147,12 +147,77 @@ test.describe('Wikipedia Smart Links', () => {
       return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
     });
 
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     const wikiLink = page.locator('.commit-body .wiki-link').first();
     await expect(wikiLink).toBeVisible({ timeout: 10000 });
 
     const borderBottom = await wikiLink.evaluate(el => getComputedStyle(el).borderBottomStyle);
     expect(borderBottom).toBe('dotted');
+  });
+
+  test('word list loads and filters capitalized common English words', async ({ page }) => {
+    // "Driver" is a common English word capitalized mid-sentence.
+    // If the wordlist loaded correctly, "driver" is in the Set → isCandidate returns false → no wiki lookup.
+    // If the wordlist FAILED to load (empty Set), "Driver" matches the capitalized pattern → becomes a candidate.
+    const driverCommits = [
+      {
+        sha: 'driver11112222333344445555666677778888',
+        commit: {
+          message: 'Fix Driver initialization\n\nThe Driver module failed to start because of a missing Memory allocation in the Computer subsystem.',
+          author: { date: '2024-02-01T10:00:00Z' },
+        },
+      },
+    ];
+
+    await page.route('**/api.github.com/users/torvalds/repos**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(repos) })
+    );
+    await page.route('**/api.github.com/repos/torvalds/*/commits**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(driverCommits) })
+    );
+
+    // Track Wikipedia API calls — none should happen for "Driver", "Memory", "Computer"
+    const wikiLookups = [];
+    await page.route('**/en.wikipedia.org/**', (route) => {
+      const url = route.request().url();
+      const word = url.split('/page/summary/').pop();
+      wikiLookups.push(decodeURIComponent(word));
+      return route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
+    });
+
+    // Verify the word list file is served and contains real data
+    const wordListResponse = await page.request.get('http://localhost:3000/data/words.txt');
+    expect(wordListResponse.status()).toBe(200);
+    const wordListText = await wordListResponse.text();
+    const wordCount = wordListText.split('\n').filter(Boolean).length;
+    expect(wordCount).toBeGreaterThan(300000); // dwyl/english-words has ~370k words
+
+    // Verify key words are in the list (trim + lowercase, same as the app code does)
+    const words = new Set(wordListText.split('\n').map(w => w.trim().toLowerCase()).filter(Boolean));
+    expect(words.has('driver')).toBe(true);
+    expect(words.has('memory')).toBe(true);
+    expect(words.has('computer')).toBe(true);
+    expect(words.has('the')).toBe(true);
+    // These should NOT be in the dictionary (proper nouns / acronyms)
+    expect(words.has('tlb')).toBe(false);
+    expect(words.has('linux')).toBe(false);
+
+    // Navigate to the reader
+    await page.goto('http://localhost:3000/#/repo/linux');
+    await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
+
+    // Wait for async wiki enhancement to finish
+    await page.waitForTimeout(3000);
+
+    // "Driver", "Memory", "Computer" should NOT have been looked up on Wikipedia
+    // because they are common English words filtered by the loaded word list
+    for (const w of ['Driver', 'Memory', 'Computer']) {
+      expect(wikiLookups).not.toContain(w);
+    }
+
+    // No wiki links should exist (all words are common English)
+    const count = await page.locator('.commit-body .wiki-link').count();
+    expect(count).toBe(0);
   });
 
   test('on Wikipedia API error (429), no crash, text still displays', async ({ page }) => {
@@ -163,7 +228,7 @@ test.describe('Wikipedia Smart Links', () => {
       route.fulfill({ status: 429, contentType: 'application/json', body: '{}' })
     );
 
-    await page.goto('/#/repo/linux');
+    await page.goto('http://localhost:3000/#/repo/linux');
     await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
 
     // Text should still display normally
