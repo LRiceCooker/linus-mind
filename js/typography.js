@@ -285,6 +285,11 @@ export function typeset(rawText) {
   text = text.replace(/https?:\/\/[^\s)<]+[^\s)<.,;:!?]/g,
     '<a class="url" href="$&" target="_blank" rel="noopener noreferrer">$&</a>');
 
+  // Step 13b: @username GitHub mentions
+  // Don't match inside email addresses (word@word) or code blocks (already extracted)
+  text = text.replace(/(?<![/\w.])@([a-zA-Z0-9][-a-zA-Z0-9]*)/g,
+    '<a class="github-mention" href="https://github.com/$1" target="_blank" rel="noopener noreferrer">@$1</a>');
+
   // Step 14: Reinject structural blocks
   codeBlocks.forEach((code, i) => {
     text = text.replace(`%%CODE_BLOCK_${i}%%`,
