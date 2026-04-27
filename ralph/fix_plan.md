@@ -5,7 +5,6 @@
 ## Backlog
 
 ### Feature — Multi-source smart link resolution
-- [ ] Update localStorage cache format. Cache key remains `linus-mind:wiki-cache`. Each entry now has: `{ exists: boolean, url: string|null, title: string|null, source: string|null, checkedAt: number }`. Old cache entries without `source` field are treated as `"wikipedia"` for backwards compatibility. Max entries remains 500, TTL remains 7 days.
 - [ ] Write E2E tests in `tests/e2e/smartlinks.spec.js` (rename from `wikipedia.spec.js` or add new file). Mock all 4 APIs. Tests: (1) Word found on Wikipedia → `.wiki-link` with Wikipedia URL. (2) Word NOT on Wikipedia but found on Wiktionary → `.wiki-link` with Wiktionary URL. (3) Word not on Wikipedia or Wiktionary but found as Wikidata entity with enwiki sitelink → `.wiki-link` with Wikipedia URL from sitelink. (4) Word not on any wiki source but found on GitHub (>100 stars) → `.github-link`. (5) Word not found anywhere → no link. (6) All sources rate-limited → no crash, text displays normally. (7) Existing tests from wikipedia.spec.js still pass (TLB, common words, word list, etc.).
 - [ ] Final QA pass: run full Playwright suite, verify the resolution chain works in order, check that audio/electronics/diving terms from Linus' non-Linux repos get better coverage. Fix any regressions.
 
@@ -66,4 +65,5 @@
 - [x] Add Wiktionary lookup in `js/smartlinks.js` — REST API definition lookup, noun-preferred filtering, adjective/adverb-only rejection, per-source backoff, cache with `source: "wiktionary"`
 - [x] Add Wikidata entity lookup in `js/smartlinks.js` — wbsearchentities + wbgetentities for enwiki sitelinks, label match + description validation, fallback to Wikidata page URL, per-source backoff, cache with `source: "wikidata"`
 - [x] Update resolution chain in `checkAllSources` — explicit per-source backoff checks at orchestration level, skip sources in backoff without function call overhead, individual check functions retain safety guards
+- [x] Update localStorage cache format — already correct: `{ exists, url, title, source, checkedAt }`, backwards compat for old entries without `source` field, 500 max, 7-day TTL
 
