@@ -80,6 +80,34 @@ export function isCandidate(word) {
 
 // --- Wikipedia API ---
 
+const TECH_KEYWORDS = [
+  'software', 'hardware', 'computer', 'programming', 'protocol',
+  'algorithm', 'processor', 'memory', 'kernel', 'operating',
+  'system', 'data', 'network', 'interface', 'binary',
+  'code', 'digital', 'electronic', 'specification',
+];
+
+function isRelevantArticle(word, data) {
+  // Reject disambiguation pages that slipped through type check
+  const desc = (data.description || '').toLowerCase();
+  if (desc.includes('disambiguation') || desc.includes('may refer to')) {
+    return false;
+  }
+
+  // For ALL_CAPS words, verify the article is tech-related
+  if (/^[A-Z][A-Z0-9]{2,}$/.test(word)) {
+    const extract = (data.extract || '').toLowerCase();
+    const hasTechContext = TECH_KEYWORDS.some(kw => extract.includes(kw));
+    const hasWikibaseItem = !!data.wikibase_item;
+    // Accept if tech-related OR has a wikibase item (established concept)
+    if (!hasTechContext && !hasWikibaseItem) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export async function checkWikipedia(word) {
   if (Date.now() < backoffUntil) {
     return { exists: false, url: null, title: null };
@@ -108,6 +136,13 @@ export async function checkWikipedia(word) {
     const data = await res.json();
 
     if (data.type === 'standard' && data.content_urls?.desktop?.page) {
+      // Apply relevance filtering
+      if (!isRelevantArticle(word, data)) {
+        const result = { exists: false, url: null, title: null };
+        setCache(word, result);
+        return result;
+      }
+
       const result = {
         exists: true,
         url: data.content_urls.desktop.page,

@@ -6,7 +6,6 @@
 ## Backlog
 
 ### Bugfix — Wikipedia link detection overhaul
-- [ ] Improve relevance filtering in `js/wikipedia.js` `checkWikipedia()`. Current check only verifies `type === 'standard'`. Add: (a) If the Wikipedia article's `description` field contains "disambiguation" or "may refer to", reject it. (b) If the article title doesn't reasonably match the word (e.g., word is "ARM" but article is about human arms, not ARM processors), check if `extract` (the article summary) contains keywords related to computing/technology/programming. If not, reject. Use a small set of tech keywords: `["software","hardware","computer","programming","protocol","algorithm","processor","memory","kernel","operating","system","data","network","interface","binary","code","digital","electronic","specification"]`. (c) Also check Wikipedia's `wikibase_item` — if it exists the article is more likely a real concept. This reduces false positives.
 - [ ] Add GitHub as a secondary source for code-specific terms. In `js/wikipedia.js`, if a candidate word looks like a project/tool name (CamelCase, ALL_CAPS, or hyphenated like `RP2354A`) and Wikipedia returns 404, try a GitHub search: `https://api.github.com/search/repositories?q={word}&per_page=1`. If the top result has >100 stars and its `name` matches the word (case-insensitive), use the repo URL as the link instead. Style these links the same as wiki links but add a subtle class `.github-link` for potential future differentiation. Cache GitHub results in the same localStorage cache as Wikipedia results. Respect the existing rate-limit/backoff logic for GitHub API too.
 
 ### Bugfix — Typography parser improvements
@@ -64,4 +63,5 @@
 - [x] Final QA pass: all 69 tests passing, flaky opacity test fixed with transition wait
 - [x] Fix Wikipedia hyphenated word extraction — regex captures `copy-on-write`, `x86-64`, etc.; isCandidate accepts hyphenated terms; enhanceWithWikiLinks tries full form then individual parts
 - [x] Fix case-insensitive deduplication in wikipedia.js — Map-based dedup by lowercase key (first-seen casing preserved), wrapWordInLink wraps ALL occurrences case-insensitively, cache keys normalized to lowercase
+- [x] Improve relevance filtering in wikipedia.js — reject disambiguation pages, require tech keywords or wikibase_item for ALL_CAPS words, reduces false positives
 

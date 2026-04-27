@@ -36,6 +36,9 @@ test.describe('Wikipedia Smart Links', () => {
         body: JSON.stringify({
           type: 'standard',
           title: 'Translation lookaside buffer',
+          description: 'Computer memory management hardware',
+          extract: 'A translation lookaside buffer (TLB) is a memory cache used by the memory management hardware to improve virtual address translation speed in computer architecture.',
+          wikibase_item: 'Q1142058',
           content_urls: { desktop: { page: 'https://en.wikipedia.org/wiki/Translation_lookaside_buffer' } },
         }),
       })
@@ -109,6 +112,9 @@ test.describe('Wikipedia Smart Links', () => {
         body: JSON.stringify({
           type: 'standard',
           title: 'Translation lookaside buffer',
+          description: 'Computer memory management hardware',
+          extract: 'A translation lookaside buffer (TLB) is a memory cache used by the memory management hardware to improve virtual address translation speed in computer architecture.',
+          wikibase_item: 'Q1142058',
           content_urls: { desktop: { page: 'https://en.wikipedia.org/wiki/Translation_lookaside_buffer' } },
         }),
       })
@@ -138,6 +144,9 @@ test.describe('Wikipedia Smart Links', () => {
         body: JSON.stringify({
           type: 'standard',
           title: 'Translation lookaside buffer',
+          description: 'Computer memory management hardware',
+          extract: 'A translation lookaside buffer (TLB) is a memory cache used by the memory management hardware to improve virtual address translation speed in computer architecture.',
+          wikibase_item: 'Q1142058',
           content_urls: { desktop: { page: 'https://en.wikipedia.org/wiki/Translation_lookaside_buffer' } },
         }),
       })
