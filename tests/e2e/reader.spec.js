@@ -125,4 +125,28 @@ test.describe('Commit Reader', () => {
     const d0Count = allShas.filter(sha => sha === 'd0e1f2a').length;
     expect(d0Count).toBe(1);
   });
+
+  test('commits are rendered in strict chronological order (oldest first)', async ({ page }) => {
+    // Mock with 3 commits whose dates are out of order (newest first, as API returns)
+    const outOfOrder = [
+      { sha: 'ccc1111222233334444555566667777888899990', commit: { message: 'Third commit (newest)', author: { date: '2024-03-01T12:00:00Z' } } },
+      { sha: 'aaa1111222233334444555566667777888899990', commit: { message: 'First commit (oldest)', author: { date: '2024-01-01T08:00:00Z' } } },
+      { sha: 'bbb1111222233334444555566667777888899990', commit: { message: 'Second commit (middle)', author: { date: '2024-02-01T10:00:00Z' } } },
+    ];
+
+    await page.route('**/api.github.com/users/torvalds/repos**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(repos) })
+    );
+    await page.route('**/api.github.com/repos/torvalds/linux/commits**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(outOfOrder) })
+    );
+
+    await page.goto('/#/repo/linux');
+    await expect(page.locator('.commit-page').first()).toBeVisible({ timeout: 5000 });
+
+    const titles = await page.locator('.commit-title').allTextContents();
+    expect(titles[0]).toBe('First commit (oldest)');
+    expect(titles[1]).toBe('Second commit (middle)');
+    expect(titles[2]).toBe('Third commit (newest)');
+  });
 });

@@ -344,7 +344,8 @@ async function loadReader(repoName) {
 
     const result = await fetchCommits(repoName, 1);
     checkRateLimit();
-    const commits = filterEmptyCommits(result.commits.reverse()); // chronological
+    const commits = filterEmptyCommits(result.commits.reverse());
+    commits.sort((a, b) => new Date(a.date) - new Date(b.date)); // strict chronological
     hasMoreCommits = result.hasMore;
     allCommits = commits;
 

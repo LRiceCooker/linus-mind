@@ -5,9 +5,6 @@
 
 ## Backlog
 
-### Bugfix — Chronological order
-- [ ] Fix commit ordering to guarantee strict chronological sort. Currently `loadReader` calls `result.commits.reverse()` on page 1 which is approximate — commits from the same day may be misordered. After the reverse AND after every `loadMoreCommits`, do a proper sort: `allCommits.sort((a, b) => new Date(a.date) - new Date(b.date))`. The `date` field is the raw ISO string from the API (`commit.author.date`), which sorts correctly with `new Date()`. Verify with an E2E test: mock 3 commits with dates out of order (newest first as API returns), verify they render oldest-first after loading.
-
 ### Bugfix — Reading progress persistence
 - [ ] Fix progress save/restore in `js/app.js`. Current bugs: (1) `currentCommitIndex` is only updated in `updateProgressBar` which depends on scroll events — if the user navigates away without scrolling, the index is 0. Fix: also update `currentCommitIndex` in the IntersectionObserver callback (the `entryObserver`) — when a commit page becomes visible, compute its index from its position among `.commit-page` elements. (2) The restore logic at line 356 only works if all commits up to `commitIndex` are already loaded (only page 1 is fetched). Fix: if `savedProgress.page > 1`, fetch pages 1 through `savedProgress.page` before rendering (await all fetches, concatenate, sort, render, THEN scroll to saved index). (3) In the `beforeunload` handler, force an immediate save (bypass debounce) by calling `saveProgress` directly with the current state. (4) Also save progress when the user navigates back (in `cleanupReader`, call `saveProgress` directly).
 
@@ -76,4 +73,5 @@
 - [x] Hide vertical scrollbar on desktop on all scroll-snap containers
 - [x] Final QA pass: all 59 tests passing
 - [x] Simplify empty commit filtering — combined title+body check, SHA deduplication, tests for merge commits and duplicates
+- [x] Fix chronological order — sort by date after reverse on initial load, E2E test verifies oldest-first rendering
 
