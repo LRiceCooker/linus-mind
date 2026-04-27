@@ -163,6 +163,61 @@ export async function checkWikipedia(word) {
   }
 }
 
+// --- GitHub API fallback ---
+
+let githubBackoffUntil = 0;
+
+function looksLikeProjectName(word) {
+  // CamelCase (HyperTransport, FreeBSD)
+  if (/^[A-Z][a-z]+[A-Z]/.test(word)) return true;
+  // ALL_CAPS (ACPI, DMA)
+  if (/^[A-Z][A-Z0-9]{2,}$/.test(word)) return true;
+  // Hyphenated (copy-on-write, x86-64)
+  if (word.includes('-')) return true;
+  return false;
+}
+
+async function checkGitHub(word) {
+  if (Date.now() < githubBackoffUntil) {
+    return { exists: false, url: null };
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.github.com/search/repositories?q=${encodeURIComponent(word)}&per_page=1`
+    );
+
+    if (res.status === 403 || res.status === 429 || res.status >= 500) {
+      githubBackoffUntil = Date.now() + BACKOFF_MS;
+      return { exists: false, url: null };
+    }
+
+    if (!res.ok) {
+      return { exists: false, url: null };
+    }
+
+    const data = await res.json();
+    if (data.items && data.items.length > 0) {
+      const repo = data.items[0];
+      if (
+        repo.stargazers_count > 100 &&
+        repo.name.toLowerCase() === word.toLowerCase()
+      ) {
+        const result = { exists: true, url: repo.html_url, title: repo.full_name, source: 'github' };
+        setCache(word, result);
+        return result;
+      }
+    }
+
+    const result = { exists: false, url: null };
+    setCache(word, result);
+    return result;
+  } catch {
+    githubBackoffUntil = Date.now() + BACKOFF_MS;
+    return { exists: false, url: null };
+  }
+}
+
 // --- DOM enhancement ---
 
 function extractCandidatesFromElement(element) {
@@ -192,7 +247,7 @@ function extractCandidatesFromElement(element) {
   return Array.from(seen.values());
 }
 
-function wrapWordInLink(element, word, url) {
+function wrapWordInLink(element, word, url, className = 'wiki-link') {
   // Build a case-insensitive whole-word regex
   const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const pattern = new RegExp(`(?<![\\w])${escaped}(?![\\w])`, 'i');
@@ -227,7 +282,7 @@ function wrapWordInLink(element, word, url) {
         parts.push(document.createTextNode(remaining.slice(0, match.index)));
       }
       const link = document.createElement('a');
-      link.className = 'wiki-link';
+      link.className = className;
       link.href = url;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
@@ -283,7 +338,8 @@ export async function enhanceWithWikiLinks(commitBodyElement) {
       const cached = getCached(word);
       if (cached) {
         if (cached.exists && cached.url) {
-          wrapWordInLink(commitBodyElement, word, cached.url);
+          const cls = cached.source === 'github' ? 'wiki-link github-link' : 'wiki-link';
+          wrapWordInLink(commitBodyElement, word, cached.url, cls);
           continue;
         }
         fullFormResolved = true; // negative cache hit
@@ -295,6 +351,16 @@ export async function enhanceWithWikiLinks(commitBodyElement) {
         if (result.exists && result.url) {
           wrapWordInLink(commitBodyElement, word, result.url);
           continue;
+        }
+
+        // Wikipedia failed — try GitHub for project-like names
+        if (looksLikeProjectName(word)) {
+          lookupCount++;
+          const ghResult = await checkGitHub(word);
+          if (ghResult.exists && ghResult.url) {
+            wrapWordInLink(commitBodyElement, word, ghResult.url, 'wiki-link github-link');
+            continue;
+          }
         }
       }
 
