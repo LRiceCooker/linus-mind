@@ -91,7 +91,10 @@ test.describe('Navigation', () => {
     await page.goto('/');
     await expect(page.locator('.repo-card').first()).toBeVisible();
 
-    // Check repo view is visible
+    // Wait for view transition animation to complete (250ms + margin)
+    await page.waitForTimeout(400);
+
+    // Check repo view is fully visible
     const repoOpacity = await page.locator('#repo-view').evaluate(
       el => getComputedStyle(el).opacity
     );

@@ -5,9 +5,6 @@
 
 ## Backlog
 
-### Final QA
-- [ ] Final QA pass: run full Playwright suite, verify all bugfixes (no gaps in scroll, correct chronological order, progress saves/restores correctly with correct page numbers and percentages, Wikipedia links appear on technical terms). Fix any regressions.
-
 ## Completed
 
 - [x] Create `index.html`: semantic HTML structure, viewport meta, theme-color metas, preconnects, Google Fonts, skip-to-content, CSS/JS links
@@ -50,4 +47,5 @@
 - [x] Fix text overflow on mobile — overflow-wrap on titles/body/code/lists, code block scroll hint, reading-column overflow:hidden, long-name class
 - [x] Clickable URLs — typography step 13 outputs `<a>` tags with dotted underline, hover/focus states, E2E test
 - [x] Wikipedia smart links — wordlist.js (3000 words), wikipedia.js (candidate detection, API lookup, cache, DOM enhancement), CSS, app.js integration, 6 E2E tests
+- [x] Final QA pass: all 69 tests passing, flaky opacity test fixed with transition wait
 
