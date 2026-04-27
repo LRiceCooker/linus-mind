@@ -5,13 +5,6 @@
 
 ## Backlog
 
-### Feature — Wikipedia smart links
-- [ ] Create `js/wordlist.js`: export a `Set` of the top ~3000 most common English words. Source the list from a public domain frequency list. Include common programming terms too (function, variable, return, class, type, null, void, etc.) to avoid false positives. Also include common git/development terms (commit, merge, branch, patch, fix, bug, test, etc.). The file will be ~25-30KB. Export as `export const COMMON_WORDS = new Set([...])`.
-- [ ] Create `js/wikipedia.js` — the Wikipedia smart link module. Read `ralph/specs/wikipedia-links.md` for full spec. Implement: (1) `isCandidate(word)` — returns true if the word is NOT in COMMON_WORDS and matches heuristics (ALL_CAPS 3+ chars, CamelCase, capitalized mid-sentence). (2) `checkWikipedia(word)` — fetches `https://en.wikipedia.org/api/rest_v1/page/summary/{word}`, returns `{ exists, url, title }`. Caches results in localStorage (`linus-mind:wiki-cache`) with 7-day TTL, max 500 entries. (3) `enhanceWithWikiLinks(commitBodyElement)` — scans text nodes in the element, extracts candidate words, checks cache first, then fetches uncached candidates in batches of 5 with 200ms delay (max 20 lookups per page). Wraps matches in `<a class="wiki-link" href="..." target="_blank" rel="noopener noreferrer">`. On API error (429/5xx), back off for 60 seconds. All lookups are async and non-blocking — text renders first, links appear after.
-- [ ] Add Wikipedia link CSS to `css/style.css`: `.commit-body .wiki-link` — `color: var(--text)`, `text-decoration: none`, `border-bottom: 1px dotted var(--text-tertiary)`, `transition: border-color 200ms ease`. Hover: `border-bottom-color: var(--accent)`. Focus-visible: `outline: 2px solid var(--accent), outline-offset: 2px`.
-- [ ] Integrate Wikipedia links in `js/app.js`: after rendering each commit page (in `renderCommitPages` and `loadMoreCommits`), call `enhanceWithWikiLinks(commitBodyElement)` on each new commit page's `.commit-body` element. Ensure it runs AFTER typeset and lead-in are applied. The enhancement is fire-and-forget — no await needed, it updates the DOM asynchronously.
-- [ ] Write `tests/e2e/wikipedia.spec.js`: mock the Wikipedia API via `page.route('**/en.wikipedia.org/**')`. Tests: (1) A word like "TLB" in a commit gets a `.wiki-link` element after render (mock Wikipedia returning 200). (2) A common English word like "the" does NOT get a wiki link. (3) A word with no Wikipedia article (mock 404) does NOT get a link. (4) Links have `target="_blank"` and `rel="noopener noreferrer"`. (5) Wiki link has dotted underline style. (6) On Wikipedia API error (mock 429), no crash, text still displays normally.
-
 ### Final QA
 - [ ] Final QA pass: run full Playwright suite, verify all bugfixes (no gaps in scroll, correct chronological order, progress saves/restores correctly with correct page numbers and percentages, Wikipedia links appear on technical terms). Fix any regressions.
 
@@ -56,4 +49,5 @@
 - [x] Fix progress indicator — shows "commit N / M+ (X%)" on repo list and "N / M · X%" in reader counter
 - [x] Fix text overflow on mobile — overflow-wrap on titles/body/code/lists, code block scroll hint, reading-column overflow:hidden, long-name class
 - [x] Clickable URLs — typography step 13 outputs `<a>` tags with dotted underline, hover/focus states, E2E test
+- [x] Wikipedia smart links — wordlist.js (3000 words), wikipedia.js (candidate detection, API lookup, cache, DOM enhancement), CSS, app.js integration, 6 E2E tests
 

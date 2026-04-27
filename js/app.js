@@ -5,6 +5,7 @@ import {
   renderRepoList, renderChapterTitle, renderCommitPage,
   renderSpinner, renderError
 } from './ui.js';
+import { enhanceWithWikiLinks } from './wikipedia.js';
 
 // Rate-limit bar
 const rateLimitBar = document.getElementById('rate-limit-bar');
@@ -232,6 +233,11 @@ async function loadMoreCommits() {
     const fragment = renderCommitPages(allCommits, 1, total, hasMoreCommits);
     scrollContainer.appendChild(fragment);
 
+    // Enhance with Wikipedia links (fire-and-forget)
+    scrollContainer.querySelectorAll('.commit-body').forEach(el => {
+      enhanceWithWikiLinks(el);
+    });
+
     if (spinner) scrollContainer.appendChild(spinner);
 
     observeCommitPages();
@@ -377,6 +383,11 @@ async function loadReader(repoName) {
     const total = commits.length;
     const fragment = renderCommitPages(commits, 1, total, hasMoreCommits);
     scrollContainer.appendChild(fragment);
+
+    // Enhance with Wikipedia links (fire-and-forget, async)
+    scrollContainer.querySelectorAll('.commit-body').forEach(el => {
+      enhanceWithWikiLinks(el);
+    });
 
     observeCommitPages();
     setupInfiniteScroll();
