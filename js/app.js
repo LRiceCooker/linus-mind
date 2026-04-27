@@ -160,6 +160,13 @@ function setupEntryObserver() {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
+        // Update currentCommitIndex from visible commit page position
+        const pages = Array.from(scrollContainer.querySelectorAll('.commit-page'));
+        const idx = pages.indexOf(entry.target);
+        if (idx >= 0 && idx !== currentCommitIndex) {
+          currentCommitIndex = idx;
+          debouncedSaveProgress();
+        }
       }
     });
   }, { root: scrollContainer, threshold: 0.3 });
@@ -342,11 +349,27 @@ async function loadReader(repoName) {
       }
     }
 
-    const result = await fetchCommits(repoName, 1);
+    // Check if we need to load multiple pages for progress restore
+    const savedProgress = loadProgress(repoName);
+    const pagesToLoad = (savedProgress && savedProgress.page > 1) ? savedProgress.page : 1;
+
+    // Fetch all needed pages
+    const fetches = [];
+    for (let p = 1; p <= pagesToLoad; p++) {
+      fetches.push(fetchCommits(repoName, p));
+    }
+    const results = await Promise.all(fetches);
     checkRateLimit();
-    const commits = filterEmptyCommits(result.commits.reverse());
-    commits.sort((a, b) => new Date(a.date) - new Date(b.date)); // strict chronological
-    hasMoreCommits = result.hasMore;
+
+    // Concatenate, filter, sort
+    let rawCommits = [];
+    for (const result of results) {
+      rawCommits = rawCommits.concat(result.commits.reverse());
+    }
+    const commits = filterEmptyCommits(rawCommits);
+    commits.sort((a, b) => new Date(a.date) - new Date(b.date));
+    hasMoreCommits = results[results.length - 1].hasMore;
+    currentPage = pagesToLoad;
     allCommits = commits;
 
     scrollContainer.removeChild(spinner);
@@ -361,13 +384,12 @@ async function loadReader(repoName) {
     // Focus chapter title for accessibility
     chapterTitle.focus();
 
-    // Restore reading progress from localStorage
-    const savedProgress = loadProgress(repoName);
+    // Restore reading progress
     if (savedProgress && savedProgress.commitIndex > 0) {
       const pages = scrollContainer.querySelectorAll('.commit-page');
       const targetPage = pages[savedProgress.commitIndex];
       if (targetPage) {
-        targetPage.classList.add('visible'); // ensure it's visible
+        targetPage.classList.add('visible');
         targetPage.scrollIntoView({ behavior: 'instant' });
         currentCommitIndex = savedProgress.commitIndex;
       }
@@ -391,6 +413,7 @@ async function loadReader(repoName) {
 function cleanupReader() {
   if (currentRepo) {
     scrollPositions.set(currentRepo, scrollContainer.scrollTop);
+    saveProgressImmediate();
     // Invalidate cached repo list so progress indicator updates
     cachedRepoListEl = null;
   }
@@ -483,16 +506,23 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// Save progress on beforeunload
-window.addEventListener('beforeunload', () => {
+// Force immediate progress save (bypass debounce)
+function saveProgressImmediate() {
   if (currentRepo && allCommits.length > 0) {
+    if (progressSaveTimer) {
+      clearTimeout(progressSaveTimer);
+      progressSaveTimer = null;
+    }
     saveProgress(currentRepo, {
       commitIndex: currentCommitIndex,
       page: currentPage,
       totalLoaded: allCommits.length,
     });
   }
-});
+}
+
+// Save progress on beforeunload
+window.addEventListener('beforeunload', saveProgressImmediate);
 
 // Initial route
 route();

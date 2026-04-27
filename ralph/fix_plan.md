@@ -5,9 +5,6 @@
 
 ## Backlog
 
-### Bugfix — Reading progress persistence
-- [ ] Fix progress save/restore in `js/app.js`. Current bugs: (1) `currentCommitIndex` is only updated in `updateProgressBar` which depends on scroll events — if the user navigates away without scrolling, the index is 0. Fix: also update `currentCommitIndex` in the IntersectionObserver callback (the `entryObserver`) — when a commit page becomes visible, compute its index from its position among `.commit-page` elements. (2) The restore logic at line 356 only works if all commits up to `commitIndex` are already loaded (only page 1 is fetched). Fix: if `savedProgress.page > 1`, fetch pages 1 through `savedProgress.page` before rendering (await all fetches, concatenate, sort, render, THEN scroll to saved index). (3) In the `beforeunload` handler, force an immediate save (bypass debounce) by calling `saveProgress` directly with the current state. (4) Also save progress when the user navigates back (in `cleanupReader`, call `saveProgress` directly).
-
 ### Bugfix — Progress indicator on repo list
 - [ ] Fix the progress indicator in `js/ui.js` `renderRepoList`. Currently it shows `page ${progress.page}` which is the API page number (meaningless to the user). Change to show: `commit ${progress.commitIndex + 1}` and if `progress.totalLoaded` is known, append ` / ${progress.totalLoaded}${hasMore ? '+' : ''}`. Also show a percentage: `(${Math.round((progress.commitIndex + 1) / progress.totalLoaded * 100)}%)`. Example: "commit 42 / 128+ (33%)". If `totalLoaded` is 0 or missing, show nothing. Use the same styling: Inter, `0.6875rem`, `--text-tertiary`, italic. Also add percentage to the commit reader page counter (in `renderCommitPage`): change format from `12 / 847` to `12 / 847 · 1%`. Update E2E tests for the new format.
 
@@ -74,4 +71,5 @@
 - [x] Final QA pass: all 59 tests passing
 - [x] Simplify empty commit filtering — combined title+body check, SHA deduplication, tests for merge commits and duplicates
 - [x] Fix chronological order — sort by date after reverse on initial load, E2E test verifies oldest-first rendering
+- [x] Fix reading progress persistence — IntersectionObserver tracks index, multi-page restore, immediate save on navigate/unload
 
