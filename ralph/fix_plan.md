@@ -4,9 +4,6 @@
 
 ## Backlog
 
-### Feature — Multi-source smart link resolution
-- [ ] Final QA pass: run full Playwright suite, verify the resolution chain works in order, check that audio/electronics/diving terms from Linus' non-Linux repos get better coverage. Fix any regressions.
-
 ## Completed
 
 - [x] Create `index.html`: semantic HTML structure, viewport meta, theme-color metas, preconnects, Google Fonts, skip-to-content, CSS/JS links
@@ -66,4 +63,5 @@
 - [x] Update resolution chain in `checkAllSources` — explicit per-source backoff checks at orchestration level, skip sources in backoff without function call overhead, individual check functions retain safety guards
 - [x] Update localStorage cache format — already correct: `{ exists, url, title, source, checkedAt }`, backwards compat for old entries without `source` field, 500 max, 7-day TTL
 - [x] Write E2E tests in `tests/e2e/smartlinks.spec.js` — 6 tests: Wikipedia hit, Wiktionary fallback, Wikidata sitelink, GitHub fallback, no-result, all-rate-limited. All 81 tests passing (75 existing + 6 new)
+- [x] Final QA pass: all 81 tests passing, resolution chain works in order, no regressions
 
